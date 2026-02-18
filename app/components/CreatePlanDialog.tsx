@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Label } from '@/app/components/ui/label';
+import { Text } from '@radix-ui/themes';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
@@ -30,16 +30,16 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !startDate || !endDate) return;
-    
+
     onCreatePlan({
       title: title.trim(),
       description: description.trim(),
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
     });
-    
+
     // Reset form
     setTitle('');
     setDescription('');
@@ -64,13 +64,15 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
         <DialogHeader>
           <DialogTitle>Create New Plan</DialogTitle>
           <DialogDescription>
-            Set a goal with a specific timeframe and break it down into actionable steps.
+            <Text size="2" color="gray">
+              Set a goal with a specific timeframe and break it down into actionable steps.
+            </Text>
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="title">Plan Title *</Label>
+              <Text as="label" size="2" weight="medium" htmlFor="title">Plan Title *</Text>
               <Input
                 id="title"
                 value={title}
@@ -79,9 +81,9 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
                 required
               />
             </div>
-            
+
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Text as="label" size="2" weight="medium" htmlFor="description">Description</Text>
               <Textarea
                 id="description"
                 value={description}
@@ -90,10 +92,10 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
                 rows={3}
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Start Date *</Label>
+                <Text as="label" size="2" weight="medium">Start Date *</Text>
                 <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -115,9 +117,9 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
                   </PopoverContent>
                 </Popover>
               </div>
-              
+
               <div className="grid gap-2">
-                <Label>End Date *</Label>
+                <Text as="label" size="2" weight="medium">End Date *</Text>
                 <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -142,7 +144,7 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

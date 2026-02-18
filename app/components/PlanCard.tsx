@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Plan, Action } from '@/app/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
 import { Badge } from '@/app/components/ui/badge';
 import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, CrossCircledIcon } from '@radix-ui/react-icons';
+import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
 import { CreateActionDialog } from './CreateActionDialog';
@@ -27,7 +28,7 @@ interface PlanCardProps {
 export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
   const [expanded, setExpanded] = useState(true);
   const [showCreateAction, setShowCreateAction] = useState(false);
-  
+
   const progress = calculateProgress(plan, actions);
   const daysLeft = getDaysLeft(plan);
   const overdue = isOverdue(plan);
@@ -54,9 +55,9 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
       )}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 space-y-1">
+            <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <CardTitle className="text-lg">{plan.title}</CardTitle>
+                <Heading size="4" as="h3">{plan.title}</Heading>
                 {overdue && (
                   <Badge variant="destructive" className="text-xs">
                     Overdue
@@ -64,10 +65,10 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
                 )}
               </div>
               {plan.description && (
-                <CardDescription className="text-sm">{plan.description}</CardDescription>
+                <Text as="p" size="2" color="gray">{plan.description}</Text>
               )}
             </div>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm">
@@ -86,32 +87,32 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          
-          <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
-            <div className="flex items-center gap-1.5">
-              <CalendarIcon className="h-4 w-4" />
-              <span>{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ClockIcon className="h-4 w-4" />
-              <span className={cn(overdue && "text-destructive font-medium")}>
+
+          <div className="flex items-center gap-4 pt-2">
+            <Flex align="center" gap="2">
+              <CalendarIcon className="h-4 w-4 text-gray-500" />
+              <Text size="2" color="gray">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
+            </Flex>
+            <Flex align="center" gap="2">
+              <ClockIcon className="h-4 w-4 text-gray-500" />
+              <Text size="2" color={overdue ? "red" : "gray"} weight={overdue ? "medium" : undefined}>
                 {daysLeft >= 0 ? `${daysLeft} days left` : `${Math.abs(daysLeft)} days overdue`}
-              </span>
-            </div>
+              </Text>
+            </Flex>
           </div>
-          
+
           <div className="space-y-2 pt-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Progress</span>
-              <span className="font-medium">{progress}%</span>
+              <Text size="2" color="gray">Progress</Text>
+              <Text size="2" weight="medium">{progress}%</Text>
             </div>
             <Progress value={progress} className="h-2" />
-            <div className="text-xs text-muted-foreground">
+            <Text size="1" color="gray">
               {planActions.filter(a => a.status === 'done').length} of {activeActions.length} actions completed
-            </div>
+            </Text>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between">
             <Button
@@ -123,7 +124,7 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
               {expanded ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
               {planActions.length} {planActions.length === 1 ? 'Action' : 'Actions'}
             </Button>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -134,7 +135,7 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
               Add Action
             </Button>
           </div>
-          
+
           {expanded && planActions.length > 0 && (
             <div className="space-y-1 border-t pt-3">
               {planActions.map((action) => (
@@ -146,15 +147,15 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
               ))}
             </div>
           )}
-          
+
           {expanded && planActions.length === 0 && (
-            <div className="text-center py-8 text-sm text-muted-foreground border-t">
+            <Text align="center" size="2" color="gray" className="py-8 border-t block">
               No actions yet. Click "Add Action" to get started.
-            </div>
+            </Text>
           )}
         </CardContent>
       </Card>
-      
+
       <CreateActionDialog
         open={showCreateAction}
         onOpenChange={setShowCreateAction}

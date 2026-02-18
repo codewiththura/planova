@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Label } from '@/app/components/ui/label';
+import { Text } from '@radix-ui/themes';
 
 interface CreateActionDialogProps {
   open: boolean;
@@ -16,11 +16,11 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, onCreateActi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) return;
-    
+
     onCreateAction(title.trim());
-    
+
     // Reset form
     setTitle('');
     onOpenChange(false);
@@ -32,13 +32,15 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, onCreateActi
         <DialogHeader>
           <DialogTitle>Add Action</DialogTitle>
           <DialogDescription>
-            Add a specific action to: <span className="font-medium text-foreground">{planTitle}</span>
+            <Text size="2" color="gray">
+              Add a specific action to: <Text weight="medium" color="gray">{planTitle}</Text>
+            </Text>
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="action-title">Action Title *</Label>
+              <Text as="label" size="2" weight="medium" htmlFor="action-title">Action Title *</Text>
               <Input
                 id="action-title"
                 value={title}
@@ -49,7 +51,7 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, onCreateActi
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

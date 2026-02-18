@@ -1,4 +1,5 @@
-import React from 'react';
+import { Text } from '@radix-ui/themes';
+
 import { Action, ActionStatus } from '@/app/types';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Button } from '@/app/components/ui/button';
@@ -38,15 +39,18 @@ export function ActionItem({ action, onUpdateStatus }: ActionItemProps) {
         disabled={action.status === 'cancel'}
         className={cn(action.status === 'cancel' && "cursor-not-allowed")}
       />
-      
-      <span className={cn(
-        "flex-1 text-sm transition-all",
-        action.status === 'done' && "line-through text-muted-foreground",
-        action.status === 'cancel' && "line-through text-muted-foreground"
-      )}>
+
+      <Text
+        size="2"
+        className={cn(
+          "flex-1 transition-all",
+          action.status === 'done' && "line-through text-muted-foreground",
+          action.status === 'cancel' && "line-through text-muted-foreground"
+        )}
+      >
         {action.title}
-      </span>
-      
+      </Text>
+
       {action.status === 'cancel' ? (
         <Button
           variant="ghost"

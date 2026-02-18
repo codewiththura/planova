@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
 
 export const metadata: Metadata = {
   title: "Planova",
@@ -16,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        {children}
+        <Theme>
+          <Navbar />
+          {children}
+        </Theme>
       </body>
     </html>
   );

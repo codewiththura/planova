@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { TargetIcon } from '@radix-ui/react-icons';
+import { Heading, Text } from '@radix-ui/themes';
 
 export function Navbar() {
     return (
@@ -11,8 +12,8 @@ export function Navbar() {
                             <TargetIcon className="h-5 w-5" />
                         </div>
                         <div>
-                            <h1 className="font-semibold text-lg">Planova</h1>
-                            <p className="text-xs text-muted-foreground">Turn plans into actions</p>
+                            <Heading size="3">Planova</Heading>
+                            <Text size="1" color="gray">Turn plans into actions</Text>
                         </div>
                     </Link>
                 </div>

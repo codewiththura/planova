@@ -6,6 +6,7 @@ import { Button } from '@/app/components/ui/button';
 import { PlanCard } from '@/app/components/PlanCard';
 import { CreatePlanDialog } from '@/app/components/CreatePlanDialog';
 import { PlusIcon } from '@radix-ui/react-icons';
+import { Heading, Text } from '@radix-ui/themes';
 
 // Dummy data
 const initialPlans: Plan[] = [
@@ -113,7 +114,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto py-10 px-4 max-w-5xl">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <Heading size="8">Dashboard</Heading>
         <Button onClick={() => setShowCreatePlan(true)}>
           <PlusIcon className="mr-2 h-4 w-4" />
           New Plan
@@ -125,10 +126,10 @@ export default function Dashboard() {
           <div className="bg-muted rounded-full p-4 mb-4">
             <PlusIcon className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium mb-2">No Active Plans</h3>
-          <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+          <Heading size="5" mb="2">No Active Plans</Heading>
+          <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }} mb="6">
             Create your first plan to start organizing your goals and tracking your progress.
-          </p>
+          </Text>
           <Button onClick={() => setShowCreatePlan(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
             Create Your First Plan
