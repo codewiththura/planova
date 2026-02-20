@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
 import { Badge } from '@/app/components/ui/badge';
-import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, CrossCircledIcon } from '@radix-ui/react-icons';
+import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, CrossCircledIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
@@ -26,7 +26,7 @@ interface PlanCardProps {
 }
 
 export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [showCreateAction, setShowCreateAction] = useState(false);
 
   const progress = calculateProgress(plan, actions);
@@ -50,19 +50,14 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
   return (
     <>
       <Card className={cn(
-        "transition-all",
-        overdue && "border-destructive"
+        "transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:border-primary/40",
+        overdue && "border-destructive hover:border-destructive"
       )}>
-        <CardHeader className="pb-3">
+        <CardHeader className="p-4 pb-2">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Heading size="4" as="h3">{plan.title}</Heading>
-                {overdue && (
-                  <Badge variant="destructive" className="text-xs">
-                    Overdue
-                  </Badge>
-                )}
+                <Heading size="3" as="h3">{plan.title}</Heading>
               </div>
               {plan.description && (
                 <Text as="p" size="2" color="gray">{plan.description}</Text>
@@ -71,8 +66,8 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  Actions
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <DotsHorizontalIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -90,30 +85,30 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
 
           <div className="flex items-center gap-4 pt-2">
             <Flex align="center" gap="2">
-              <CalendarIcon className="h-4 w-4 text-gray-500" />
-              <Text size="2" color="gray">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
+              <CalendarIcon className="h-3.5 w-3.5 text-gray-500" />
+              <Text size="1" color="gray">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
             </Flex>
             <Flex align="center" gap="2">
-              <ClockIcon className="h-4 w-4 text-gray-500" />
-              <Text size="2" color={overdue ? "red" : "gray"} weight={overdue ? "medium" : undefined}>
+              <ClockIcon className="h-3.5 w-3.5 text-gray-500" />
+              <Text size="1" color={overdue ? "red" : "gray"} weight={overdue ? "medium" : undefined}>
                 {daysLeft >= 0 ? `${daysLeft} days left` : `${Math.abs(daysLeft)} days overdue`}
               </Text>
             </Flex>
           </div>
 
-          <div className="space-y-2 pt-3">
-            <div className="flex items-center justify-between text-sm">
-              <Text size="2" color="gray">Progress</Text>
-              <Text size="2" weight="medium">{progress}%</Text>
+          <div className="space-y-1.5 pt-3">
+            <div className="flex items-center justify-between text-xs">
+              <Text size="1" color="gray">Progress</Text>
+              <Text size="1" weight="medium">{progress}%</Text>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-1.5" />
             <Text size="1" color="gray">
               {planActions.filter(a => a.status === 'done').length} of {activeActions.length} actions completed
             </Text>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 p-4 pt-0">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -137,7 +132,7 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
           </div>
 
           {expanded && planActions.length > 0 && (
-            <div className="space-y-1 border-t pt-3">
+            <div className="space-y-1 border-t pt-2 max-h-[160px] overflow-y-auto pr-1">
               {planActions.map((action) => (
                 <ActionItem
                   key={action.id}
