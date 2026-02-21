@@ -146,6 +146,10 @@ export default function Dashboard() {
     setActions([...actions, action]);
   };
 
+  const handleEditAction = (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => {
+    setActions(actions.map(a => a.id === actionId ? { ...a, title, ...options } : a));
+  };
+
   const handleUpdateActionStatus = (actionId: string, status: ActionStatus) => {
     setActions(actions.map(a => a.id === actionId ? { ...a, status } : a));
   };
@@ -302,6 +306,7 @@ export default function Dashboard() {
               plans={notStartedPlans}
               actions={actions}
               onCreateAction={handleCreateAction}
+              onEditAction={handleEditAction}
               onUpdateActionStatus={handleUpdateActionStatus}
               onUpdatePlanStatus={handleUpdatePlanStatus}
             />
@@ -310,6 +315,7 @@ export default function Dashboard() {
               plans={inProgressPlans}
               actions={actions}
               onCreateAction={handleCreateAction}
+              onEditAction={handleEditAction}
               onUpdateActionStatus={handleUpdateActionStatus}
               onUpdatePlanStatus={handleUpdatePlanStatus}
             />
@@ -318,6 +324,7 @@ export default function Dashboard() {
               plans={overduePlans}
               actions={actions}
               onCreateAction={handleCreateAction}
+              onEditAction={handleEditAction}
               onUpdateActionStatus={handleUpdateActionStatus}
               onUpdatePlanStatus={handleUpdatePlanStatus}
             />
@@ -337,6 +344,7 @@ export default function Dashboard() {
                     plan={plan}
                     actions={actions}
                     onCreateAction={handleCreateAction}
+                    onEditAction={handleEditAction}
                     onUpdateActionStatus={handleUpdateActionStatus}
                     onUpdatePlanStatus={handleUpdatePlanStatus}
                   />

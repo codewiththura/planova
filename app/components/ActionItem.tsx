@@ -3,16 +3,17 @@ import { Text } from '@radix-ui/themes';
 import { Action, ActionStatus } from '@/app/types';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Button } from '@/app/components/ui/button';
-import { Cross2Icon, ReloadIcon, CalendarIcon, ClockIcon } from '@radix-ui/react-icons';
+import { Cross2Icon, ReloadIcon, CalendarIcon, ClockIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import { formatDate } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 
 interface ActionItemProps {
   action: Action;
   onUpdateStatus: (actionId: string, status: ActionStatus) => void;
+  onEditAction?: (action: Action) => void;
 }
 
-export function ActionItem({ action, onUpdateStatus }: ActionItemProps) {
+export function ActionItem({ action, onUpdateStatus, onEditAction }: ActionItemProps) {
   const handleCheckboxChange = (checked: boolean) => {
     if (action.status === 'pending') {
       onUpdateStatus(action.id, 'done');
@@ -27,6 +28,12 @@ export function ActionItem({ action, onUpdateStatus }: ActionItemProps) {
 
   const handleRestore = () => {
     onUpdateStatus(action.id, 'pending');
+  };
+
+  const handleEdit = () => {
+    if (onEditAction) {
+      onEditAction(action);
+    }
   };
 
   const renderActionDate = () => {
@@ -93,20 +100,30 @@ export function ActionItem({ action, onUpdateStatus }: ActionItemProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="h-7 w-7 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
           onClick={handleRestore}
         >
           <ReloadIcon className="h-3.5 w-3.5" />
         </Button>
       ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={handleCancel}
-        >
-          <Cross2Icon className="h-3.5 w-3.5" />
-        </Button>
+        <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={handleEdit}
+          >
+            <Pencil1Icon className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={handleCancel}
+          >
+            <Cross2Icon className="h-3.5 w-3.5" />
+          </Button>
+        </div>
       )}
     </div>
   );

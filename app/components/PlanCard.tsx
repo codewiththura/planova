@@ -9,6 +9,7 @@ import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
 import { CreateActionDialog } from './CreateActionDialog';
+import { EditActionDialog } from './EditActionDialog';
 import { cn } from '@/app/lib/utils';
 import {
   DropdownMenu,
@@ -21,13 +22,15 @@ interface PlanCardProps {
   plan: Plan;
   actions: Action[];
   onCreateAction: (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
+  onEditAction: (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
   onUpdateActionStatus: (actionId: string, status: Action['status']) => void;
   onUpdatePlanStatus: (planId: string, status: Plan['status']) => void;
 }
 
-export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
+export function PlanCard({ plan, actions, onCreateAction, onEditAction, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showCreateAction, setShowCreateAction] = useState(false);
+  const [actionToEdit, setActionToEdit] = useState<Action | null>(null);
 
   const progress = calculateProgress(plan, actions);
   const daysLeft = getDaysLeft(plan);
@@ -144,6 +147,7 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
                   key={action.id}
                   action={action}
                   onUpdateStatus={onUpdateActionStatus}
+                  onEditAction={setActionToEdit}
                 />
               ))}
             </div>
@@ -164,6 +168,18 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
         planStartDate={plan.startDate}
         planEndDate={plan.endDate}
         onCreateAction={handleCreateAction}
+      />
+
+      <EditActionDialog
+        open={!!actionToEdit}
+        onOpenChange={(open) => {
+          if (!open) setActionToEdit(null);
+        }}
+        planTitle={plan.title}
+        planStartDate={plan.startDate}
+        planEndDate={plan.endDate}
+        action={actionToEdit}
+        onEditAction={onEditAction}
       />
     </>
   );
