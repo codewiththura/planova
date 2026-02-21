@@ -11,9 +11,10 @@ interface ActionItemProps {
   action: Action;
   onUpdateStatus: (actionId: string, status: ActionStatus) => void;
   onEditAction?: (action: Action) => void;
+  onDeleteAction?: (action: Action) => void;
 }
 
-export function ActionItem({ action, onUpdateStatus, onEditAction }: ActionItemProps) {
+export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteAction }: ActionItemProps) {
   const handleCheckboxChange = (checked: boolean) => {
     if (action.status === 'pending') {
       onUpdateStatus(action.id, 'done');
@@ -22,8 +23,8 @@ export function ActionItem({ action, onUpdateStatus, onEditAction }: ActionItemP
     }
   };
 
-  const handleCancel = () => {
-    onUpdateStatus(action.id, 'cancel');
+  const handleDelete = () => {
+    if (onDeleteAction) onDeleteAction(action);
   };
 
   const handleRestore = () => {
@@ -119,7 +120,7 @@ export function ActionItem({ action, onUpdateStatus, onEditAction }: ActionItemP
             variant="ghost"
             size="icon"
             className="h-7 w-7"
-            onClick={handleCancel}
+            onClick={handleDelete}
           >
             <Cross2Icon className="h-3.5 w-3.5" />
           </Button>

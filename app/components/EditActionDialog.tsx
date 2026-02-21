@@ -5,7 +5,7 @@ import { Input } from '@/app/components/ui/input';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { CalendarIcon, ClockIcon } from '@radix-ui/react-icons';
+import { CalendarIcon, ClockIcon, ArchiveIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 import { Action } from '@/app/types';
@@ -28,9 +28,10 @@ interface EditActionDialogProps {
             endTime?: string;
         }
     ) => void;
+    onArchiveAction?: (actionId: string) => void;
 }
 
-export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onEditAction }: EditActionDialogProps) {
+export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onEditAction, onArchiveAction }: EditActionDialogProps) {
     const [title, setTitle] = useState('');
     const [startDate, setStartDate] = useState<Date | undefined>();
     const [endDate, setEndDate] = useState<Date | undefined>();
@@ -207,7 +208,7 @@ export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate,
             }
           `}
                 </style>
-                <DialogHeader className="space-y-1.5 pb-2">
+                <DialogHeader className="space-y-1.5 pb-2 relative pr-10">
                     <DialogTitle className="text-[20px] font-semibold tracking-tight">Edit Action</DialogTitle>
                     <DialogDescription className="text-[14px] text-muted-foreground/80">
                         Action for Plan: <span className="font-medium text-foreground/80">{planTitle}</span>
@@ -319,21 +320,38 @@ export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate,
                         </div>
                     </div>
 
-                    <DialogFooter className="pt-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => onOpenChange(false)}
-                            className="h-9 px-4 text-[13px] font-medium border-border/50 text-muted-foreground shadow-sm hover:bg-muted/40 hover:text-foreground active:scale-[0.97] transition-all duration-200 rounded-[8px]"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            className="h-9 px-4 text-[13px] font-medium bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] hover:from-primary/80 hover:to-primary active:scale-[0.97] transition-all duration-200 disabled:opacity-50 disabled:active:scale-100 rounded-[8px]"
-                        >
-                            Save Changes
-                        </Button>
+                    <DialogFooter className="pt-2 sm:justify-between w-full">
+                        {onArchiveAction && action && action.status !== 'cancel' ? (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => {
+                                    onArchiveAction(action.id);
+                                    onOpenChange(false);
+                                }}
+                                className="h-9 px-3 text-muted-foreground hover:text-warning hover:bg-warning/10 transition-colors"
+                            >
+                                <ArchiveIcon className="mr-2 h-4 w-4" />
+                                <span className="text-[13px] font-medium">Archive</span>
+                            </Button>
+                        ) : <div />}
+
+                        <div className="flex gap-2 mt-2 sm:mt-0">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onOpenChange(false)}
+                                className="h-9 px-4 text-[13px] font-medium border-border/50 text-muted-foreground shadow-sm hover:bg-muted/40 hover:text-foreground active:scale-[0.97] transition-all duration-200 rounded-[8px]"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="h-9 px-4 text-[13px] font-medium bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] hover:from-primary/80 hover:to-primary active:scale-[0.97] transition-all duration-200 disabled:opacity-50 disabled:active:scale-100 rounded-[8px]"
+                            >
+                                Save Changes
+                            </Button>
+                        </div>
                     </DialogFooter>
                 </form>
             </DialogContent>

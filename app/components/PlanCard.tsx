@@ -12,6 +12,7 @@ import { CreateActionDialog } from './CreateActionDialog';
 import { EditActionDialog } from './EditActionDialog';
 import { EditPlanDialog } from './EditPlanDialog';
 import { DeletePlanDialog } from './DeletePlanDialog';
+import { DeleteActionDialog } from './DeleteActionDialog';
 import { cn } from '@/app/lib/utils';
 import {
   DropdownMenu,
@@ -27,16 +28,18 @@ interface PlanCardProps {
   onEditAction: (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
   onEditPlan: (planId: string, updates: { title: string; description: string; startDate: string; endDate: string; }) => void;
   onDeletePlan: (planId: string) => void;
+  onDeleteAction: (actionId: string) => void;
   onUpdateActionStatus: (actionId: string, status: Action['status']) => void;
   onUpdatePlanStatus: (planId: string, status: Plan['status']) => void;
 }
 
-export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPlan, onDeletePlan, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
+export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPlan, onDeletePlan, onDeleteAction, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showCreateAction, setShowCreateAction] = useState(false);
   const [showEditPlan, setShowEditPlan] = useState(false);
   const [showDeletePlan, setShowDeletePlan] = useState(false);
   const [actionToEdit, setActionToEdit] = useState<Action | null>(null);
+  const [actionToDelete, setActionToDelete] = useState<Action | null>(null);
 
   const progress = calculateProgress(plan, actions);
   const daysLeft = getDaysLeft(plan);
@@ -92,7 +95,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleCompletePlan}>
                   <CheckCircledIcon className="mr-2 h-4 w-4" />
-                  Complete
+                  Finish
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleClosePlan}>
                   <ArchiveIcon className="mr-2 h-4 w-4" />
@@ -162,6 +165,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
                   action={action}
                   onUpdateStatus={onUpdateActionStatus}
                   onEditAction={setActionToEdit}
+                  onDeleteAction={setActionToDelete}
                 />
               ))}
             </div>
@@ -194,6 +198,16 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         planEndDate={plan.endDate}
         action={actionToEdit}
         onEditAction={onEditAction}
+        onArchiveAction={(actionId: string) => onUpdateActionStatus(actionId, 'cancel')}
+      />
+
+      <DeleteActionDialog
+        open={!!actionToDelete}
+        onOpenChange={(open) => {
+          if (!open) setActionToDelete(null);
+        }}
+        action={actionToDelete}
+        onDeleteAction={onDeleteAction}
       />
 
       <EditPlanDialog
