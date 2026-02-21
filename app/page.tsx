@@ -3,11 +3,22 @@
 import { useState } from 'react';
 import { Plan, Action, ActionStatus, PlanStatus } from '@/app/types';
 import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
 import { PlanCard } from '@/app/components/PlanCard';
 import { CreatePlanDialog } from '@/app/components/CreatePlanDialog';
-import { PlusIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { PlusIcon, ChevronDownIcon, MixerHorizontalIcon, ArrowUpIcon, ArrowDownIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Heading, Text } from '@radix-ui/themes';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/app/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel } from '@/app/components/ui/dropdown-menu';
+import { calculateProgress } from '@/app/utils/helpers';
+
+type SortField = 'start_date' | 'progress' | 'task_count';
+type SortDirection = 'asc' | 'desc';
+
+const sortOptions: Record<SortField, { label: string, asc: string, desc: string }> = {
+  start_date: { label: 'Start Date', asc: 'Earliest → Latest', desc: 'Latest → Earliest' },
+  progress: { label: 'Progress', asc: 'Least → Most', desc: 'Most → Least' },
+  task_count: { label: 'Task Count', asc: 'Fewest → Most', desc: 'Most → Fewest' }
+};
 
 // Dummy data
 const initialPlans: Plan[] = [
@@ -99,6 +110,18 @@ export default function Dashboard() {
   const [actions, setActions] = useState<Action[]>(initialActions);
   const [showCreatePlan, setShowCreatePlan] = useState(false);
   const [mobileFilter, setMobileFilter] = useState<'not_started' | 'in_progress' | 'overdue'>('in_progress');
+  const [sortField, setSortField] = useState<SortField>('start_date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSortChange = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const handleCreatePlan = (newPlan: { title: string; description: string; startDate: string; endDate: string }) => {
     const plan: Plan = {
@@ -129,12 +152,39 @@ export default function Dashboard() {
     setPlans(plans.map(p => p.id === planId ? { ...p, status } : p));
   };
 
-  const activePlans = plans.filter(p => p.status === 'active');
+  const activePlans = plans.filter(p => {
+    if (p.status !== 'active') return false;
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return p.title.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
+  });
 
   const now = new Date();
-  const notStartedPlans = activePlans.filter(p => new Date(p.startDate) > now);
-  const inProgressPlans = activePlans.filter(p => new Date(p.startDate) <= now && new Date(p.endDate) >= now);
-  const overduePlans = activePlans.filter(p => new Date(p.endDate) < now);
+
+  const sortPlans = (plansToSort: Plan[]) => {
+    return [...plansToSort].sort((a, b) => {
+      let comparison = 0;
+      switch (sortField) {
+        case 'start_date':
+          comparison = new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+          break;
+        case 'progress':
+          comparison = calculateProgress(a, actions) - calculateProgress(b, actions);
+          break;
+        case 'task_count': {
+          const aCount = actions.filter(act => act.planId === a.id && act.status !== 'cancel').length;
+          const bCount = actions.filter(act => act.planId === b.id && act.status !== 'cancel').length;
+          comparison = aCount - bCount;
+          break;
+        }
+      }
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  };
+
+  const notStartedPlans = sortPlans(activePlans.filter(p => new Date(p.startDate) > now));
+  const inProgressPlans = sortPlans(activePlans.filter(p => new Date(p.startDate) <= now && new Date(p.endDate) >= now));
+  const overduePlans = sortPlans(activePlans.filter(p => new Date(p.endDate) < now));
 
   const getMobilePlans = () => {
     switch (mobileFilter) {
@@ -156,8 +206,56 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-6 max-w-[1600px]">
-      <div className="flex items-center justify-between mb-7">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 md:mb-6">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-[280px]">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search plans..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 rounded-full h-10 bg-background"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-2 rounded-full h-10 px-4 hover:bg-muted/50">
+                  {/* <MixerHorizontalIcon className="h-4 w-4 text-muted-foreground md:flex hidden" /> */}
+                  <Text size="2" weight="regular" className="text-muted-foreground flex items-center gap-1.5 whitespace-nowrap">
+                    Sort By:{" "}
+                    {sortOptions[sortField].label}
+                    {sortDirection === 'asc' ? <ArrowUpIcon className="h-3 w-3 text-muted-foreground" /> : <ArrowDownIcon className="h-3 w-3 text-muted-foreground" />}
+                  </Text>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[200px] rounded-xl z-50">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-muted-foreground font-normal text-xs mb-1 px-3">Sort By</DropdownMenuLabel>
+                  {Object.entries(sortOptions).map(([key, option]) => {
+                    const isSelected = sortField === key;
+                    const displayDirection = isSelected ? sortDirection : 'asc';
+                    const labelText = option.label;
+                    const directionText = option[displayDirection as SortDirection];
+
+                    return (
+                      <DropdownMenuItem
+                        key={key}
+                        onClick={() => handleSortChange(key as SortField)}
+                        className={`py-1 my-1 px-3 flex flex-col items-start gap-0.5 cursor-pointer ${isSelected ? 'bg-primary/10 text-primary focus:bg-primary/15' : ''}`}
+                      >
+                        <span className="font-normal">{labelText}</span>
+                        <span className="text-xs opacity-70">{directionText}</span>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <div className="md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -173,7 +271,7 @@ export default function Dashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <Button onClick={() => setShowCreatePlan(true)} size="lg" className="hidden md:flex rounded-full shadow-sm">
+          <Button onClick={() => setShowCreatePlan(true)} size="lg" className="hidden md:flex rounded-3xl shadow-sm">
             <PlusIcon className="mr-2 h-4 w-4" />
             New Plan
           </Button>
@@ -199,11 +297,11 @@ export default function Dashboard() {
           <div className="hidden md:grid gap-6 md:grid-cols-3 items-start h-full">
             {/* Not Started Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center justify-between mb-1">
-                <Heading size="4" className="text-muted-foreground flex items-center gap-2 font-semibold">
+              <div className="flex items-center gap-2 mb-1 ms-2">
+                <Heading size="3" className="text-muted-foreground uppercase">
                   Not Started
                 </Heading>
-                <span className="bg-background border shadow-sm text-foreground px-2.5 py-1 rounded-full text-xs font-bold">{notStartedPlans.length}</span>
+                <span className="text-sm text-muted-foreground font-bold">{notStartedPlans.length}</span>
               </div>
               {notStartedPlans.length === 0 ? (
                 <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
@@ -225,11 +323,11 @@ export default function Dashboard() {
 
             {/* In Progress Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center justify-between mb-1">
-                <Heading size="4" className="text-primary flex items-center gap-2 font-semibold">
+              <div className="flex items-center gap-3 mb-1 ms-2">
+                <Heading size="3" className="text-muted-foreground uppercase">
                   In Progress
                 </Heading>
-                <span className="bg-primary text-primary-foreground px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">{inProgressPlans.length}</span>
+                <span className="text-sm text-muted-foreground font-bold">{inProgressPlans.length}</span>
               </div>
               {inProgressPlans.length === 0 ? (
                 <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
@@ -251,11 +349,11 @@ export default function Dashboard() {
 
             {/* Overdue Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center justify-between mb-1">
-                <Heading size="4" className="text-destructive flex items-center gap-2 font-semibold">
+              <div className="flex items-center gap-2 mb-1 ms-2">
+                <Heading size="3" className="text-muted-foreground uppercase">
                   Overdue
                 </Heading>
-                <span className="bg-destructive text-destructive-foreground px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">{overduePlans.length}</span>
+                <span className="text-sm text-muted-foreground font-bold">{overduePlans.length}</span>
               </div>
               {overduePlans.length === 0 ? (
                 <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
@@ -279,7 +377,7 @@ export default function Dashboard() {
           {/* Mobile View */}
           <div className="md:hidden flex flex-col gap-4 h-full">
             {getMobilePlans().length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 border rounded-2xl border-dashed bg-muted/10">
+              <div className="flex flex-col items-center justify-center pb-16 border rounded-2xl border-dashed bg-muted/10">
                 <Text size="3" color="gray" align="center">No plans in this category.</Text>
               </div>
             ) : (

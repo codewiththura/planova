@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from 'next/navigation';
-import { BellIcon, SunIcon, MoonIcon, TargetIcon } from '@radix-ui/react-icons';
+import { BellIcon, SunIcon, MoonIcon, TargetIcon, SlashIcon, Component1Icon, DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { Button } from './ui/button';
-import { Heading } from '@radix-ui/themes';
+import { Heading, Text } from '@radix-ui/themes';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -27,13 +27,25 @@ export function TopNavbar() {
 
     return (
         <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-card px-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
                 <Link href="/" className="md:hidden flex items-center gap-2">
                     <div className="bg-primary text-primary-foreground rounded-lg p-1.5 inline-flex">
                         <TargetIcon className="h-5 w-5" />
                     </div>
                 </Link>
-                <Heading size="3">{getPageTitle()}</Heading>
+
+                <div className="hidden md:flex items-center gap-2 text-sm tracking-wide">
+                    <div className="flex items-center gap-2 text-foreground hover:text-foreground transition-colors cursor-pointer">
+                        <Component1Icon className="h-4 w-4" />
+                    </div>
+                    <DoubleArrowRightIcon className="h-4 w-4 text-foreground/50" />
+                    <Text size="3" className="text-foreground">{getPageTitle()}</Text>
+                </div>
+
+                {/* Mobile bare title fallback */}
+                <div className="md:hidden">
+                    <Heading size="3" className="font-semibold">{getPageTitle()}</Heading>
+                </div>
             </div>
 
             <div className="flex items-center gap-2">
