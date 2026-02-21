@@ -134,6 +134,10 @@ export default function Dashboard() {
     setPlans([...plans, plan]);
   };
 
+  const handleEditPlan = (planId: string, updates: { title: string; description: string; startDate: string; endDate: string; }) => {
+    setPlans(plans.map(p => p.id === planId ? { ...p, ...updates } : p));
+  };
+
   const handleCreateAction = (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => {
     const action: Action = {
       id: Math.random().toString(36).substr(2, 9),
@@ -307,6 +311,7 @@ export default function Dashboard() {
               actions={actions}
               onCreateAction={handleCreateAction}
               onEditAction={handleEditAction}
+              onEditPlan={handleEditPlan}
               onUpdateActionStatus={handleUpdateActionStatus}
               onUpdatePlanStatus={handleUpdatePlanStatus}
             />
@@ -316,6 +321,7 @@ export default function Dashboard() {
               actions={actions}
               onCreateAction={handleCreateAction}
               onEditAction={handleEditAction}
+              onEditPlan={handleEditPlan}
               onUpdateActionStatus={handleUpdateActionStatus}
               onUpdatePlanStatus={handleUpdatePlanStatus}
             />
@@ -325,6 +331,7 @@ export default function Dashboard() {
               actions={actions}
               onCreateAction={handleCreateAction}
               onEditAction={handleEditAction}
+              onEditPlan={handleEditPlan}
               onUpdateActionStatus={handleUpdateActionStatus}
               onUpdatePlanStatus={handleUpdatePlanStatus}
             />
@@ -345,6 +352,7 @@ export default function Dashboard() {
                     actions={actions}
                     onCreateAction={handleCreateAction}
                     onEditAction={handleEditAction}
+                    onEditPlan={handleEditPlan}
                     onUpdateActionStatus={handleUpdateActionStatus}
                     onUpdatePlanStatus={handleUpdatePlanStatus}
                   />

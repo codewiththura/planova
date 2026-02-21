@@ -4,12 +4,13 @@ import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
 import { Badge } from '@/app/components/ui/badge';
-import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, CrossCircledIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, CrossCircledIcon, DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
 import { CreateActionDialog } from './CreateActionDialog';
 import { EditActionDialog } from './EditActionDialog';
+import { EditPlanDialog } from './EditPlanDialog';
 import { cn } from '@/app/lib/utils';
 import {
   DropdownMenu,
@@ -23,13 +24,15 @@ interface PlanCardProps {
   actions: Action[];
   onCreateAction: (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
   onEditAction: (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
+  onEditPlan: (planId: string, updates: { title: string; description: string; startDate: string; endDate: string; }) => void;
   onUpdateActionStatus: (actionId: string, status: Action['status']) => void;
   onUpdatePlanStatus: (planId: string, status: Plan['status']) => void;
 }
 
-export function PlanCard({ plan, actions, onCreateAction, onEditAction, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
+export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPlan, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showCreateAction, setShowCreateAction] = useState(false);
+  const [showEditPlan, setShowEditPlan] = useState(false);
   const [actionToEdit, setActionToEdit] = useState<Action | null>(null);
 
   const progress = calculateProgress(plan, actions);
@@ -80,6 +83,10 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onUpdate
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setShowEditPlan(true)}>
+                  <Pencil1Icon className="mr-2 h-4 w-4" />
+                  Edit Plan
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleCompletePlan}>
                   <CheckCircledIcon className="mr-2 h-4 w-4" />
                   Mark as Completed
@@ -180,6 +187,13 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onUpdate
         planEndDate={plan.endDate}
         action={actionToEdit}
         onEditAction={onEditAction}
+      />
+
+      <EditPlanDialog
+        open={showEditPlan}
+        onOpenChange={setShowEditPlan}
+        plan={plan}
+        onEditPlan={onEditPlan}
       />
     </>
   );
