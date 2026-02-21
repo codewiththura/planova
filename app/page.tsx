@@ -299,7 +299,7 @@ export default function Dashboard() {
             {/* Coming Up Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
               <div className="flex items-center gap-2 ms-2">
-                <Heading size="3" className="text-muted-foreground uppercase">
+                <Heading size="4" className="text-muted-foreground uppercase">
                   Coming Up
                 </Heading>
                 <span className="text-sm text-muted-foreground font-bold">{notStartedPlans.length}</span>
@@ -325,7 +325,7 @@ export default function Dashboard() {
             {/* Ongoing Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
               <div className="flex items-center gap-3 ms-2">
-                <Heading size="3" className="text-muted-foreground uppercase">
+                <Heading size="4" className="text-muted-foreground uppercase">
                   Ongoing
                 </Heading>
                 <span className="text-sm text-muted-foreground font-bold">{inProgressPlans.length}</span>
@@ -351,7 +351,7 @@ export default function Dashboard() {
             {/* Overdue Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
               <div className="flex items-center gap-2 ms-2">
-                <Heading size="3" className="text-muted-foreground uppercase">
+                <Heading size="4" className="text-muted-foreground uppercase">
                   Overdue
                 </Heading>
                 <span className="text-sm text-muted-foreground font-bold">{overduePlans.length}</span>

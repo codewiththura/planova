@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Text } from '@radix-ui/themes';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
@@ -39,6 +38,22 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [startTimeOpen, setStartTimeOpen] = useState(false);
   const [endTimeOpen, setEndTimeOpen] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  React.useEffect(() => {
+    if (open) {
+      setTitle('');
+      setStartDate(planStartDate ? new Date(planStartDate) : undefined);
+      setEndDate(undefined);
+      setStartTime('');
+      setEndTime('');
+      setIsError(false);
+      setStartDateOpen(false);
+      setEndDateOpen(false);
+      setStartTimeOpen(false);
+      setEndTimeOpen(false);
+    }
+  }, [open, planStartDate]);
 
   // Helper to format 24h string into 12h AM/PM
   const formatTimeStr = (timeStr: string) => {
@@ -82,15 +97,15 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
     };
 
     return (
-      <div className="flex bg-background border rounded-lg overflow-hidden h-[200px] w-[220px]">
+      <div className="flex bg-background border rounded-lg overflow-hidden h-[180px] w-[220px]">
         <ScrollArea className="flex-1 border-r">
-          <div className="p-2 space-y-1">
+          <div className="p-1 space-y-1">
             {hours.map((h) => (
               <button
                 key={h}
                 type="button"
                 className={cn(
-                  "w-full text-center py-1.5 px-2 rounded-md font-medium text-sm transition-colors hover:bg-muted",
+                  "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted",
                   hour === h && "bg-primary text-primary-foreground hover:bg-primary"
                 )}
                 onClick={() => {
@@ -104,13 +119,13 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
           </div>
         </ScrollArea>
         <ScrollArea className="flex-1 border-r">
-          <div className="p-2 space-y-1">
+          <div className="p-1 space-y-1">
             {minutes.map((m) => (
               <button
                 key={m}
                 type="button"
                 className={cn(
-                  "w-full text-center py-1.5 px-2 rounded-md font-medium text-sm transition-colors hover:bg-muted",
+                  "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted",
                   minute === m && "bg-primary text-primary-foreground hover:bg-primary"
                 )}
                 onClick={() => {
@@ -123,13 +138,13 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
             ))}
           </div>
         </ScrollArea>
-        <div className="flex-1 bg-muted/20 p-2 flex flex-col justify-center space-y-2">
+        <div className="flex-1 bg-muted/20 p-1 flex flex-col justify-center space-y-2">
           {periods.map((p) => (
             <button
               key={p}
               type="button"
               className={cn(
-                "w-full text-center py-3 rounded-md font-medium text-sm transition-colors hover:bg-muted",
+                "w-full text-center py-1 rounded-md font-medium text-sm transition-colors hover:bg-muted",
                 period === p && "bg-primary text-primary-foreground hover:bg-primary"
               )}
               onClick={() => {
@@ -148,7 +163,11 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setIsError(true);
+      setTimeout(() => setIsError(false), 300);
+      return;
+    }
 
     let computedDateMode: 'none' | 'date_range' | 'specific_date' = 'none';
     if (startDate && endDate) {
@@ -177,232 +196,150 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add New Action</DialogTitle>
-          <DialogDescription>
-            <Text size="2" color="gray">
-              Action for Plan: <Text weight="medium" color="gray">{planTitle}</Text>
-            </Text>
+        <style>
+          {`
+            @keyframes shake-error {
+              0%, 100% { transform: translateX(0); }
+              20% { transform: translateX(-2px); }
+              40% { transform: translateX(3px); }
+              60% { transform: translateX(-3px); }
+              80% { transform: translateX(2px); }
+            }
+            .animate-shake-error {
+              animation: shake-error 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            }
+          `}
+        </style>
+        <DialogHeader className="space-y-1.5 pb-2">
+          <DialogTitle className="text-[20px] font-semibold tracking-tight">Add New Action</DialogTitle>
+          <DialogDescription className="text-[14px] text-muted-foreground/80">
+            Action for Plan: <span className="font-medium text-foreground/80">{planTitle}</span>
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4 mb-4">
             <div className="grid gap-2">
-              <Text as="label" size="5" weight="medium" htmlFor="action-title">
-                Action Title <Text color="red">*</Text>
-              </Text>
+              <label className="text-[13px] font-medium text-foreground/90 ml-0.5" htmlFor="action-title">
+                Action Title <span className="text-red-500/80">*</span>
+              </label>
               <Input
                 id="action-title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (isError) setIsError(false);
+                }}
                 placeholder="e.g., Complete market research"
                 required
                 autoFocus
+                className={cn(
+                  "h-10 px-3 bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 placeholder:text-muted-foreground/40 rounded-[8px] text-[14px]",
+                  isError && "animate-shake-error border-red-500/50 focus-visible:ring-red-500/20 focus-visible:border-red-500/50"
+                )}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-2">
+            <div className="grid grid-cols-2 gap-4 mt-3">
+              {/* Start Date & Time */}
               <div className="grid gap-2">
-                <Text as="label" size="2" weight="medium">Date</Text>
+                <label className="text-[13px] font-medium text-muted-foreground ml-0.5">From</label>
                 <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       type="button"
                       variant="outline"
-                      className={cn("justify-start text-left font-normal", !startDate && "text-muted-foreground")}
+                      className={cn("h-10 justify-start text-left font-normal bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 rounded-[8px]", !startDate && "text-muted-foreground/60")}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? formatDate(startDate.toISOString()) : <span>Select date</span>}
+                      <CalendarIcon className="mr-2.5 h-4 w-4 opacity-60" />
+                      <span className="truncate">{startDate ? `${formatDate(startDate.toISOString())}${startTime ? ` ${formatTimeStr(startTime)}` : ''}` : 'Select date & time'}</span>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-3" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={(date) => {
-                        setStartDate(date);
-                        if (!date) setEndDate(undefined); // Reset end date if start date is cleared
-                        setStartDateOpen(false);
-                      }}
-                      disabled={(date) => {
-                        if (!planStartDate || !planEndDate) return false;
-                        const planStart = new Date(planStartDate);
-                        planStart.setHours(0, 0, 0, 0);
-                        const planEnd = new Date(planEndDate);
-                        planEnd.setHours(23, 59, 59, 999);
-                        return date < planStart || date > planEnd;
-                      }}
-                      initialFocus
-                    />
-                    {startDate && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full mt-2 text-muted-foreground"
-                        onClick={() => {
-                          setStartDate(undefined);
-                          setEndDate(undefined);
-                          setStartTime('');
-                          setEndTime('');
-                          setStartDateOpen(false);
+                  <PopoverContent className="w-auto p-1" align="start">
+                    <div className="flex flex-col items-center sm:flex-row gap-4">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => {
+                          setStartDate(date);
+                          if (!date) setEndDate(undefined);
                         }}
-                      >
-                        Clear
-                      </Button>
+                        disabled={(date) => {
+                          if (!planStartDate || !planEndDate) return false;
+                          const planStart = new Date(planStartDate); planStart.setHours(0, 0, 0, 0);
+                          const planEnd = new Date(planEndDate); planEnd.setHours(23, 59, 59, 999);
+                          return date < planStart || date > planEnd;
+                        }}
+                        initialFocus
+                      />
+                      {/* <div className="flex flex-col gap-2"> */}
+                      {/* <div className="text-sm font-medium text-center mb-1 text-muted-foreground">Time (Optional)</div> */}
+                      <TimePickerContent value={startTime} onChange={setStartTime} onClose={() => { }} />
+                      {/* </div> */}
+                    </div>
+                    {(startDate || startTime) && (
+                      <Button variant="ghost" size="sm" className="w-full my-1 border" onClick={() => { setStartDate(undefined); setEndDate(undefined); setStartTime(''); setEndTime(''); setStartDateOpen(false); }}>Clear</Button>
                     )}
                   </PopoverContent>
                 </Popover>
               </div>
 
-              {startDate && (
-                <div className="grid gap-2">
-                  <Text as="label" size="2" weight="medium">End Date</Text>
-                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn("justify-start text-left font-normal", !endDate && "text-muted-foreground")}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? formatDate(endDate.toISOString()) : <span>Select end date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-3" align="start">
+              {/* End Date & Time */}
+              <div className="grid gap-2">
+                <label className="text-[13px] font-medium text-muted-foreground ml-0.5">To</label>
+                <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn("h-10 justify-start text-left font-normal bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 rounded-[8px]", !endDate && "text-muted-foreground/60")}
+                    >
+                      <CalendarIcon className="mr-2.5 h-4 w-4 opacity-60" />
+                      <span className="truncate">{endDate ? `${formatDate(endDate.toISOString())}${endTime ? ` ${formatTimeStr(endTime)}` : ''}` : 'Select date & time'}</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-1" align="start">
+                    <div className="flex flex-col items-center sm:flex-row gap-4">
                       <Calendar
                         mode="single"
                         selected={endDate}
                         onSelect={(date) => {
                           setEndDate(date);
-                          if (date) {
-                            setStartTime('');
-                            setEndTime('');
-                          }
-                          setEndDateOpen(false);
                         }}
                         disabled={(date) => {
                           let minDate = startDate ? new Date(startDate) : (planStartDate ? new Date(planStartDate) : null);
                           if (minDate) minDate.setHours(0, 0, 0, 0);
-
                           let maxDate = planEndDate ? new Date(planEndDate) : null;
                           if (maxDate) maxDate.setHours(23, 59, 59, 999);
-
-                          if (minDate && date < minDate) return true;
-                          if (maxDate && date > maxDate) return true;
-
-                          return false;
+                          return !!((minDate && date < minDate) || (maxDate && date > maxDate));
                         }}
                         initialFocus
                       />
-                      {endDate && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full mt-2 text-muted-foreground"
-                          onClick={() => {
-                            setEndDate(undefined);
-                            setEndDateOpen(false);
-                          }}
-                        >
-                          Clear
-                        </Button>
-                      )}
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              )}
-            </div>
-
-            {startDate && !endDate && (
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div className="grid gap-2">
-                  <Text as="label" size="2" weight="medium">Start Time</Text>
-                  <Popover open={startTimeOpen} onOpenChange={setStartTimeOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn("justify-start text-left font-normal", !startTime && "text-muted-foreground")}
-                      >
-                        <ClockIcon className="mr-2 h-4 w-4" />
-                        {startTime ? formatTimeStr(startTime) : <span>Select time</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 border-none shadow-none" align="start">
-                      <TimePickerContent
-                        value={startTime}
-                        onChange={setStartTime}
-                        onClose={() => setStartTimeOpen(false)}
-                      />
-                      {startTime && (
-                        <div className="mt-2 bg-background border rounded-lg p-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full text-muted-foreground hover:text-foreground"
-                            onClick={() => {
-                              setStartTime('');
-                              setEndTime('');
-                              setStartTimeOpen(false);
-                            }}
-                          >
-                            Clear
-                          </Button>
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                {startTime && (
-                  <div className="grid gap-2">
-                    <Text as="label" size="2" weight="medium">End Time</Text>
-                    <Popover open={endTimeOpen} onOpenChange={setEndTimeOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className={cn("justify-start text-left font-normal", !endTime && "text-muted-foreground")}
-                        >
-                          <ClockIcon className="mr-2 h-4 w-4" />
-                          {endTime ? formatTimeStr(endTime) : <span>Select end time</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 border-none shadow-none" align="start">
-                        <TimePickerContent
-                          value={endTime}
-                          onChange={setEndTime}
-                          onClose={() => setEndTimeOpen(false)}
-                        />
-                        {endTime && (
-                          <div className="mt-2 bg-background border rounded-lg p-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="w-full text-muted-foreground hover:text-foreground"
-                              onClick={() => {
-                                setEndTime('');
-                                setEndTimeOpen(false);
-                              }}
-                            >
-                              Clear
-                            </Button>
-                          </div>
-                        )}
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                )}
+                      {/* <div className="flex flex-col gap-2"> */}
+                      {/* <div className="text-sm font-medium text-center mb-1 text-muted-foreground">Time (Optional)</div> */}
+                      <TimePickerContent value={endTime} onChange={setEndTime} onClose={() => { }} />
+                      {/* </div> */}
+                    </div>
+                    {(endDate || endTime) && (
+                      <Button variant="ghost" size="sm" className="w-full mt-3 border" onClick={() => { setEndDate(undefined); setEndTime(''); setEndDateOpen(false); }}>Clear</Button>
+                    )}
+                  </PopoverContent>
+                </Popover>
               </div>
-            )}
+            </div>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <DialogFooter className="pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="h-9 px-4 text-[13px] font-medium border-border/50 text-muted-foreground shadow-sm hover:bg-muted/40 hover:text-foreground active:scale-[0.97] transition-all duration-200 rounded-[8px]"
+            >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={!title.trim()}
+              className="h-9 px-4 text-[13px] font-medium bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] hover:from-primary/80 hover:to-primary active:scale-[0.97] transition-all duration-200 disabled:opacity-50 disabled:active:scale-100 rounded-[8px]"
             >
               Add Action
             </Button>

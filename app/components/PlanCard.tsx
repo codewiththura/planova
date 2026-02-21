@@ -47,15 +47,21 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
     onUpdatePlanStatus(plan.id, 'closed');
   };
 
+  const isOngoing = plan.status === 'active' && !overdue && new Date(plan.startDate) <= new Date();
+
   return (
     <>
       <Card className={cn(
-        "transition-all duration-200 hover:shadow-md hover:-translate-y-1 hover:border-primary/40",
-        overdue && "border-destructive hover:border-destructive"
+        "transition-all duration-200 ease-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 relative border-border/60 dark:bg-card/80 dark:border-border/40 border-l-[3px] border-l-transparent",
+        overdue
+          ? "dark:border-l-destructive/50 border-l-destructive hover:border-l-destructive/80"
+          : isOngoing
+            ? "dark:border-l-green-500/50 border-l-green-500 hover:border-l-green-500/80"
+            : "hover:border-primary/40 dark:hover:border-primary/30"
       )}>
         <CardHeader className="p-4 pb-2">
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <div className="flex items-center gap-2">
                 <Heading size="3" as="h3">{plan.title}</Heading>
               </div>
@@ -83,50 +89,50 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
             </DropdownMenu>
           </div>
 
-          <div className="flex items-center gap-4 pt-2">
+          <div className="flex items-center gap-4 pt-3 pb-1">
             <Flex align="center" gap="2">
-              <CalendarIcon className="h-3.5 w-3.5 text-gray-500" />
-              <Text size="1" color="gray">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
+              <CalendarIcon className="h-3.5 w-3.5 text-foreground" />
+              <Text size="1" className="text-foreground">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
             </Flex>
             <Flex align="center" gap="2">
-              <ClockIcon className="h-3.5 w-3.5 text-gray-500" />
-              <Text size="1" color={overdue ? "red" : "gray"} weight={overdue ? "medium" : undefined}>
+              <ClockIcon className={cn("h-3.5 w-3.5", overdue ? "text-red-500/70" : "text-foreground")} />
+              <Text size="1" className={cn(overdue ? "text-red-500 font-medium" : "text-foreground")}>
                 {daysLeft >= 0 ? `${daysLeft} days left` : `${Math.abs(daysLeft)} days overdue`}
               </Text>
             </Flex>
           </div>
 
-          <div className="space-y-1.5 pt-3">
-            <div className="flex items-center justify-between text-xs">
-              <Text size="1" color="gray">Progress</Text>
-              <Text size="1" weight="medium">{progress}%</Text>
+          <div className="space-y-2 pt-3">
+            <div className="flex items-center justify-between text-[11px] font-medium tracking-wide text-muted-foreground">
+              <span className="uppercase tracking-wider">Progress</span>
+              <span>{progress}%</span>
             </div>
-            <Progress value={progress} className="h-1.5" />
-            <Text size="1" color="gray">
+            <Progress value={progress} className="h-1.5 dark:bg-muted/40" />
+            <Text size="1" className="text-muted-foreground/60">
               {planActions.filter(a => a.status === 'done').length} of {activeActions.length} actions completed
             </Text>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3 p-4 pt-0">
+        <CardContent className="space-y-3 p-4 pt-1">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setExpanded(!expanded)}
-              className="gap-1.5"
+              className="gap-1.5 h-8 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-full px-3"
             >
-              {expanded ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+              {expanded ? <ChevronUpIcon className="h-3.5 w-3.5" /> : <ChevronDownIcon className="h-3.5 w-3.5" />}
               {planActions.length} {planActions.length === 1 ? 'Action' : 'Actions'}
             </Button>
 
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setShowCreateAction(true)}
-              className="gap-1.5"
+              className="gap-1 h-8 text-[12px] font-medium text-primary hover:text-primary hover:bg-primary/10 rounded-full px-3 pointer-events-auto"
             >
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon className="h-3.5 w-3.5" />
               Add Action
             </Button>
           </div>
