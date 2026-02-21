@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
 import { Badge } from '@/app/components/ui/badge';
-import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, CrossCircledIcon, DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons';
+import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, DotsHorizontalIcon, Pencil1Icon, TrashIcon, ArchiveIcon } from '@radix-ui/react-icons';
 import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
 import { CreateActionDialog } from './CreateActionDialog';
 import { EditActionDialog } from './EditActionDialog';
 import { EditPlanDialog } from './EditPlanDialog';
+import { DeletePlanDialog } from './DeletePlanDialog';
 import { cn } from '@/app/lib/utils';
 import {
   DropdownMenu,
@@ -25,14 +26,16 @@ interface PlanCardProps {
   onCreateAction: (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
   onEditAction: (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
   onEditPlan: (planId: string, updates: { title: string; description: string; startDate: string; endDate: string; }) => void;
+  onDeletePlan: (planId: string) => void;
   onUpdateActionStatus: (actionId: string, status: Action['status']) => void;
   onUpdatePlanStatus: (planId: string, status: Plan['status']) => void;
 }
 
-export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPlan, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
+export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPlan, onDeletePlan, onUpdateActionStatus, onUpdatePlanStatus }: PlanCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showCreateAction, setShowCreateAction] = useState(false);
   const [showEditPlan, setShowEditPlan] = useState(false);
+  const [showDeletePlan, setShowDeletePlan] = useState(false);
   const [actionToEdit, setActionToEdit] = useState<Action | null>(null);
 
   const progress = calculateProgress(plan, actions);
@@ -82,18 +85,22 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
                   <DotsHorizontalIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className='w-40'>
                 <DropdownMenuItem onClick={() => setShowEditPlan(true)}>
                   <Pencil1Icon className="mr-2 h-4 w-4" />
-                  Edit Plan
+                  Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleCompletePlan}>
                   <CheckCircledIcon className="mr-2 h-4 w-4" />
-                  Mark as Completed
+                  Complete
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleClosePlan}>
-                  <CrossCircledIcon className="mr-2 h-4 w-4" />
-                  Close Plan
+                  <ArchiveIcon className="mr-2 h-4 w-4" />
+                  Archive
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowDeletePlan(true)} className="text-destructive focus:text-destructive">
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -194,6 +201,13 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         onOpenChange={setShowEditPlan}
         plan={plan}
         onEditPlan={onEditPlan}
+      />
+
+      <DeletePlanDialog
+        open={showDeletePlan}
+        onOpenChange={setShowDeletePlan}
+        plan={plan}
+        onDeletePlan={onDeletePlan}
       />
     </>
   );

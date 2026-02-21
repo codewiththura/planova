@@ -13,6 +13,7 @@ interface PlanColumnProps {
     ) => void;
     onEditAction: (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
     onEditPlan: (planId: string, updates: { title: string; description: string; startDate: string; endDate: string; }) => void;
+    onDeletePlan: (planId: string) => void;
     onUpdateActionStatus: (actionId: string, status: ActionStatus) => void;
     onUpdatePlanStatus: (planId: string, status: PlanStatus) => void;
 }
@@ -24,6 +25,7 @@ export function PlanColumn({
     onCreateAction,
     onEditAction,
     onEditPlan,
+    onDeletePlan,
     onUpdateActionStatus,
     onUpdatePlanStatus,
 }: PlanColumnProps) {
@@ -47,6 +49,7 @@ export function PlanColumn({
                             onCreateAction={onCreateAction}
                             onEditAction={onEditAction}
                             onEditPlan={onEditPlan}
+                            onDeletePlan={onDeletePlan}
                             onUpdateActionStatus={onUpdateActionStatus}
                             onUpdatePlanStatus={onUpdatePlanStatus}
                         />
