@@ -52,7 +52,7 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
   return (
     <>
       <Card className={cn(
-        "transition-all duration-200 ease-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 relative border-border/60 dark:bg-card/80 dark:border-border/40 border-l-[3px] border-l-transparent",
+        "transition-all duration-200 ease-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:-translate-y-1 relative border-border/60 dark:bg-card/80 dark:border-border/40 border-l-[3px] border-l-transparent",
         overdue
           ? "dark:border-l-destructive/50 border-l-destructive hover:border-l-destructive/80"
           : isOngoing

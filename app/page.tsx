@@ -5,6 +5,7 @@ import { Plan, Action, ActionStatus, PlanStatus } from '@/app/types';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { PlanCard } from '@/app/components/PlanCard';
+import { PlanColumn } from '@/app/components/PlanColumn';
 import { CreatePlanDialog } from '@/app/components/CreatePlanDialog';
 import { PlusIcon, ChevronDownIcon, MixerHorizontalIcon, ArrowUpIcon, ArrowDownIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Heading, Text } from '@radix-ui/themes';
@@ -296,83 +297,30 @@ export default function Dashboard() {
       ) : (
         <>
           <div className="hidden md:grid gap-6 md:grid-cols-3 items-start h-full">
-            {/* Coming Up Column */}
-            <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center gap-2 ms-2">
-                <Heading size="4" className="text-muted-foreground uppercase">
-                  Coming Up
-                </Heading>
-                <span className="text-sm text-muted-foreground font-bold">{notStartedPlans.length}</span>
-              </div>
-              {notStartedPlans.length === 0 ? (
-                <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
-              ) : (
-                <div className="grid gap-4">
-                  {notStartedPlans.map((plan) => (
-                    <PlanCard
-                      key={plan.id}
-                      plan={plan}
-                      actions={actions}
-                      onCreateAction={handleCreateAction}
-                      onUpdateActionStatus={handleUpdateActionStatus}
-                      onUpdatePlanStatus={handleUpdatePlanStatus}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Ongoing Column */}
-            <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center gap-3 ms-2">
-                <Heading size="4" className="text-muted-foreground uppercase">
-                  Ongoing
-                </Heading>
-                <span className="text-sm text-muted-foreground font-bold">{inProgressPlans.length}</span>
-              </div>
-              {inProgressPlans.length === 0 ? (
-                <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
-              ) : (
-                <div className="grid gap-4">
-                  {inProgressPlans.map((plan) => (
-                    <PlanCard
-                      key={plan.id}
-                      plan={plan}
-                      actions={actions}
-                      onCreateAction={handleCreateAction}
-                      onUpdateActionStatus={handleUpdateActionStatus}
-                      onUpdatePlanStatus={handleUpdatePlanStatus}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Overdue Column */}
-            <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center gap-2 ms-2">
-                <Heading size="4" className="text-muted-foreground uppercase">
-                  Overdue
-                </Heading>
-                <span className="text-sm text-muted-foreground font-bold">{overduePlans.length}</span>
-              </div>
-              {overduePlans.length === 0 ? (
-                <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
-              ) : (
-                <div className="grid gap-4">
-                  {overduePlans.map((plan) => (
-                    <PlanCard
-                      key={plan.id}
-                      plan={plan}
-                      actions={actions}
-                      onCreateAction={handleCreateAction}
-                      onUpdateActionStatus={handleUpdateActionStatus}
-                      onUpdatePlanStatus={handleUpdatePlanStatus}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+            <PlanColumn
+              title="Coming Up"
+              plans={notStartedPlans}
+              actions={actions}
+              onCreateAction={handleCreateAction}
+              onUpdateActionStatus={handleUpdateActionStatus}
+              onUpdatePlanStatus={handleUpdatePlanStatus}
+            />
+            <PlanColumn
+              title="Ongoing"
+              plans={inProgressPlans}
+              actions={actions}
+              onCreateAction={handleCreateAction}
+              onUpdateActionStatus={handleUpdateActionStatus}
+              onUpdatePlanStatus={handleUpdatePlanStatus}
+            />
+            <PlanColumn
+              title="Overdue"
+              plans={overduePlans}
+              actions={actions}
+              onCreateAction={handleCreateAction}
+              onUpdateActionStatus={handleUpdateActionStatus}
+              onUpdatePlanStatus={handleUpdatePlanStatus}
+            />
           </div>
 
           {/* Mobile View */}
