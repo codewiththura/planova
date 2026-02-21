@@ -9,6 +9,11 @@ export interface Action {
   status: ActionStatus;
   createdAt: string;
   completedAt?: string;
+  dateMode?: 'none' | 'date_range' | 'specific_date';
+  startDate?: string;
+  endDate?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export interface Plan {

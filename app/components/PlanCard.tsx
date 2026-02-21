@@ -20,7 +20,7 @@ import {
 interface PlanCardProps {
   plan: Plan;
   actions: Action[];
-  onCreateAction: (planId: string, title: string) => void;
+  onCreateAction: (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => void;
   onUpdateActionStatus: (actionId: string, status: Action['status']) => void;
   onUpdatePlanStatus: (planId: string, status: Plan['status']) => void;
 }
@@ -35,8 +35,8 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
   const planActions = actions.filter(action => action.planId === plan.id);
   const activeActions = planActions.filter(action => action.status !== 'cancel');
 
-  const handleCreateAction = (title: string) => {
-    onCreateAction(plan.id, title);
+  const handleCreateAction = (title: string, options?: any) => {
+    onCreateAction(plan.id, title, options);
   };
 
   const handleCompletePlan = () => {
@@ -155,6 +155,8 @@ export function PlanCard({ plan, actions, onCreateAction, onUpdateActionStatus, 
         open={showCreateAction}
         onOpenChange={setShowCreateAction}
         planTitle={plan.title}
+        planStartDate={plan.startDate}
+        planEndDate={plan.endDate}
         onCreateAction={handleCreateAction}
       />
     </>

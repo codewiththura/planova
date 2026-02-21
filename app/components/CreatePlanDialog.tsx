@@ -72,7 +72,7 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Text as="label" size="2" weight="medium" htmlFor="title">Plan Title *</Text>
+              <Text as="label" size="2" weight="medium" htmlFor="title">Plan Title <Text color="red">*</Text></Text>
               <Input
                 id="title"
                 value={title}
@@ -95,7 +95,7 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Text as="label" size="2" weight="medium">Start Date *</Text>
+                <Text as="label" size="2" weight="medium">Start Date <Text color="red">*</Text></Text>
                 <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -119,7 +119,7 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
               </div>
 
               <div className="grid gap-2">
-                <Text as="label" size="2" weight="medium">End Date *</Text>
+                <Text as="label" size="2" weight="medium">End Date <Text color="red">*</Text></Text>
                 <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                   <PopoverTrigger asChild>
                     <Button

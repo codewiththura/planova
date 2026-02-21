@@ -30,14 +30,14 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             )}>
             <div className="flex h-16 items-center justify-between border-b px-5">
                 <Link href="/" className="flex items-center gap-2 font-semibold overflow-hidden">
-                    <div className="bg-primary text-primary-foreground rounded-lg p-2 shrink-0 transition-all duration-300 ease-in-out">
+                    <div className="bg-primary text-primary-foreground rounded-lg me-2 p-2 shrink-0 transition-all duration-300 ease-in-out">
                         <TargetIcon className="h-5 w-5" />
                     </div>
                     <div className={cn(
                         "transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap",
                         isCollapsed ? "max-w-0 opacity-0" : "max-w-[120px] opacity-100"
                     )}>
-                        <Heading size="6" className="tracking-tight mb-[1px]">Planova</Heading>
+                        <Heading size="6" className="tracking-tight mb-[1px] text-primary">Planova</Heading>
                     </div>
                 </Link>
             </div>

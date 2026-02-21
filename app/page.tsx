@@ -133,13 +133,14 @@ export default function Dashboard() {
     setPlans([...plans, plan]);
   };
 
-  const handleCreateAction = (planId: string, title: string) => {
+  const handleCreateAction = (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => {
     const action: Action = {
       id: Math.random().toString(36).substr(2, 9),
       planId,
       title,
       status: 'pending',
       createdAt: new Date().toISOString(),
+      ...options,
     };
     setActions([...actions, action]);
   };
@@ -295,11 +296,11 @@ export default function Dashboard() {
       ) : (
         <>
           <div className="hidden md:grid gap-6 md:grid-cols-3 items-start h-full">
-            {/* Not Started Column */}
+            {/* Coming Up Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
               <div className="flex items-center gap-2 ms-2">
                 <Heading size="3" className="text-muted-foreground uppercase">
-                  Not Started
+                  Coming Up
                 </Heading>
                 <span className="text-sm text-muted-foreground font-bold">{notStartedPlans.length}</span>
               </div>
@@ -321,11 +322,11 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* In Progress Column */}
+            {/* Ongoing Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
               <div className="flex items-center gap-3 ms-2">
                 <Heading size="3" className="text-muted-foreground uppercase">
-                  In Progress
+                  Ongoing
                 </Heading>
                 <span className="text-sm text-muted-foreground font-bold">{inProgressPlans.length}</span>
               </div>
