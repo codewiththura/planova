@@ -232,9 +232,9 @@ export default function Dashboard() {
                   </Text>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[200px] rounded-xl z-50">
+              <DropdownMenuContent align="start" className="w-[200px] rounded-xl z-50 p-2">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-muted-foreground font-normal text-xs mb-1 px-3">Sort By</DropdownMenuLabel>
+                  <DropdownMenuLabel className="text-muted-foreground font-normal text-xs mb-1 px-3">SORT BY</DropdownMenuLabel>
                   {Object.entries(sortOptions).map(([key, option]) => {
                     const isSelected = sortField === key;
                     const displayDirection = isSelected ? sortDirection : 'asc';
@@ -245,10 +245,10 @@ export default function Dashboard() {
                       <DropdownMenuItem
                         key={key}
                         onClick={() => handleSortChange(key as SortField)}
-                        className={`py-1 my-1 px-3 flex flex-col items-start gap-0.5 cursor-pointer ${isSelected ? 'bg-primary/10 text-primary focus:bg-primary/15' : ''}`}
+                        className={`py-1 my-1 px-3 flex flex-col items-start gap-0.5 cursor-pointer ${isSelected ? 'bg-primary/10 dark:bg-primary/40 text-primary dark:text-white focus:bg-primary/15' : ''}`}
                       >
-                        <span className="font-normal">{labelText}</span>
-                        <span className="text-xs opacity-70">{directionText}</span>
+                        <span className="font-semibold">{labelText}</span>
+                        <span className="text-xs opacity-70 dark:text-gray-400">{directionText}</span>
                       </DropdownMenuItem>
                     );
                   })}
@@ -297,7 +297,7 @@ export default function Dashboard() {
           <div className="hidden md:grid gap-6 md:grid-cols-3 items-start h-full">
             {/* Not Started Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center gap-2 mb-1 ms-2">
+              <div className="flex items-center gap-2 ms-2">
                 <Heading size="3" className="text-muted-foreground uppercase">
                   Not Started
                 </Heading>
@@ -323,7 +323,7 @@ export default function Dashboard() {
 
             {/* In Progress Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center gap-3 mb-1 ms-2">
+              <div className="flex items-center gap-3 ms-2">
                 <Heading size="3" className="text-muted-foreground uppercase">
                   In Progress
                 </Heading>
@@ -349,7 +349,7 @@ export default function Dashboard() {
 
             {/* Overdue Column */}
             <div className="flex flex-col gap-4 min-h-[500px]">
-              <div className="flex items-center gap-2 mb-1 ms-2">
+              <div className="flex items-center gap-2 ms-2">
                 <Heading size="3" className="text-muted-foreground uppercase">
                   Overdue
                 </Heading>
