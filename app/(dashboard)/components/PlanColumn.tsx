@@ -1,6 +1,6 @@
 import { Heading, Text } from '@radix-ui/themes';
 import { Plan, Action, ActionStatus, PlanStatus } from '@/app/types';
-import { PlanCard } from '@/app/components/PlanCard';
+import { PlanCard } from '@/app/(dashboard)/components/PlanCard';
 
 interface PlanColumnProps {
     title: string;
