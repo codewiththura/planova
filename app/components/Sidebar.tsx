@@ -56,7 +56,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                                     "flex items-center rounded-lg py-2 transition-all duration-300 ease-in-out group",
                                     isCollapsed ? "justify-center px-0" : "px-3 gap-3",
                                     isActive
-                                        ? "bg-muted text-primary"
+                                        ? "bg-accent text-accent-foreground"
                                         : "text-muted-foreground hover:bg-muted/50"
                                 )}
                                 title={isCollapsed ? item.name : undefined}

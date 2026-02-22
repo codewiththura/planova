@@ -168,15 +168,14 @@ export default function Dashboard() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                <DropdownMenuItem onClick={() => setMobileFilter('coming_up')} className={cn("py-2 cursor-pointer", mobileFilter === 'coming_up' && "bg-primary/10 text-primary dark:bg-primary/40 focus:bg-primary/15")}>Coming Up</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMobileFilter('ongoing')} className={cn("py-2 cursor-pointer", mobileFilter === 'ongoing' && "bg-primary/10 text-primary dark:bg-primary/40 focus:bg-primary/15")}>Ongoing</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMobileFilter('overdue')} className={cn("py-2 cursor-pointer", mobileFilter === 'overdue' ? "bg-destructive/10 text-destructive dark:bg-destructive/40 focus:bg-destructive/15 focus:text-destructive" : "text-destructive focus:text-destructive")}>Overdue</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMobileFilter('coming_up')} className={cn("py-2 cursor-pointer", mobileFilter === 'coming_up' && "bg-primary/10 text-primary dark:bg-primary/15 dark:text-accent-foreground focus:bg-primary/40")}>Coming Up</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMobileFilter('ongoing')} className={cn("py-2 cursor-pointer", mobileFilter === 'ongoing' && "bg-primary/10 text-primary dark:bg-primary/15 dark:text-accent-foreground focus:bg-primary/40")}>Ongoing</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMobileFilter('overdue')} className={cn("py-2 cursor-pointer", mobileFilter === 'overdue' && "bg-primary/10 text-primary dark:bg-primary/15 dark:text-accent-foreground focus:bg-primary/40")}>Overdue</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           <Button onClick={() => setShowCreatePlan(true)} size="lg" className="hidden md:flex rounded-3xl shadow-sm">
-            <PlusIcon className="mr-2 h-4 w-4" />
-            New Plan
+            <Text size="2" weight="medium">+ New Plan</Text>
           </Button>
         </div>
       </div>

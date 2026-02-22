@@ -86,10 +86,11 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
       <div className="flex-1 min-w-0">
         <Text
           size="2"
+          color={action.status === 'done' || action.status === 'cancel' ? 'gray' : undefined}
+          highContrast={action.status !== 'done' && action.status !== 'cancel'}
           className={cn(
             "transition-all block truncate",
-            action.status === 'done' && "line-through text-muted-foreground",
-            action.status === 'cancel' && "line-through text-muted-foreground"
+            (action.status === 'done' || action.status === 'cancel') && "line-through"
           )}
         >
           {action.title}

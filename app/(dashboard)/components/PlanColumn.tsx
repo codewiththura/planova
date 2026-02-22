@@ -34,10 +34,12 @@ export function PlanColumn({
     return (
         <div className="flex flex-col gap-4 min-h-[500px]">
             <div className="flex items-center gap-2 ms-2">
-                <Heading size="4" className="text-muted-foreground uppercase">
+                <Text size="1" weight="bold" color="gray" className="uppercase tracking-wider">
                     {title}
-                </Heading>
-                <span className="text-sm text-muted-foreground font-bold">{plans.length}</span>
+                </Text>
+                <Text size="1" weight="bold" color={title.toLowerCase() === 'overdue' ? 'red' : 'gray'}>
+                    {plans.length}
+                </Text>
             </div>
             {plans.length === 0 ? (
                 <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>

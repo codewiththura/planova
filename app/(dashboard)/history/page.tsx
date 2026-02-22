@@ -85,8 +85,8 @@ export default function HistoryPage() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start" className="w-40 rounded-xl">
-                                <DropdownMenuItem onClick={() => setMobileFilter('plans')} className={cn("py-2 cursor-pointer", mobileFilter === 'plans' && "bg-primary/10 text-primary dark:bg-primary/40 focus:bg-primary/15")}>Plans</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setMobileFilter('actions')} className={cn("py-2 cursor-pointer", mobileFilter === 'actions' && "bg-primary/10 text-primary dark:bg-primary/40 focus:bg-primary/15")}>Actions</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setMobileFilter('plans')} className={cn("py-2 cursor-pointer", mobileFilter === 'plans' && "bg-primary/10 text-primary dark:bg-primary/15 dark:text-accent-foreground focus:bg-primary/40")}>Plans</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setMobileFilter('actions')} className={cn("py-2 cursor-pointer", mobileFilter === 'actions' && "bg-primary/10 text-primary dark:bg-primary/15 dark:text-accent-foreground focus:bg-primary/40")}>Actions</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -105,9 +105,9 @@ export default function HistoryPage() {
 
             <div className="max-w-[1600px] container mx-auto pb-12 flex flex-col sm:grid sm:grid-cols-2 sm:gap-14">
                 <section className={cn("sm:block", mobileFilter === 'plans' ? 'block' : 'hidden')}>
-                    <Heading size="4" className="hidden sm:block text-muted-foreground uppercase">
+                    <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider">
                         PLANS
-                    </Heading>
+                    </Text>
 
                     <div className="grid gap-2 mt-5">
                         {visiblePlans.map((plan) => (
@@ -132,19 +132,19 @@ export default function HistoryPage() {
                             <Button
                                 variant="ghost"
                                 onClick={() => setVisibleCount(prev => prev + 5)}
-                                className="text-primary hover:text-primary hover:bg-primary/10 rounded-full px-6 gap-2"
+                                className="hover:bg-primary/10 rounded-full px-6 gap-2"
                             >
-                                Show more
-                                <ChevronDownIcon className="h-4 w-4" />
+                                <Text size="2" weight="medium" color="violet">Show more</Text>
+                                <ChevronDownIcon className="h-4 w-4 text-[var(--violet-9)]" />
                             </Button>
                         </div>
                     )}
                 </section>
 
                 <section className={cn("pb-8 sm:block", mobileFilter === 'actions' ? 'block' : 'hidden')}>
-                    <Heading size="4" className="hidden sm:block text-muted-foreground uppercase mb-5">
+                    <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider mb-5">
                         ACTIONS
-                    </Heading>
+                    </Text>
 
                     <div className="relative pl-1 sm:pl-3 mt-5">
                         <div className="absolute left-[15px] sm:left-[23px] top-6 bottom-4 w-px bg-border/60 dark:bg-border/40 z-0 hidden sm:block" />
@@ -161,10 +161,10 @@ export default function HistoryPage() {
                             <Button
                                 variant="ghost"
                                 onClick={() => setVisibleActionCount(prev => prev + 5)}
-                                className="text-primary hover:text-primary hover:bg-primary/10 rounded-full px-6 gap-2"
+                                className="hover:bg-primary/10 rounded-full px-6 gap-2"
                             >
-                                Show more
-                                <ChevronDownIcon className="h-4 w-4" />
+                                <Text size="2" weight="medium" color="violet">Show more</Text>
+                                <ChevronDownIcon className="h-4 w-4 text-[var(--violet-9)]" />
                             </Button>
                         </div>
                     )}

@@ -39,12 +39,12 @@ export function TopNavbar() {
                         <Component1Icon className="h-4 w-4" />
                     </div>
                     <DoubleArrowRightIcon className="h-4 w-4 text-foreground/50" />
-                    <Text size="3" className="text-foreground">{getPageTitle()}</Text>
+                    <Heading size="5" weight="medium" className="text-foreground">{getPageTitle()}</Heading>
                 </div>
 
                 {/* Mobile bare title fallback */}
                 <div className="md:hidden">
-                    <Heading size="3" className="font-semibold">{getPageTitle()}</Heading>
+                    <Heading size="5" weight="medium" className="font-semibold">{getPageTitle()}</Heading>
                 </div>
             </div>
 

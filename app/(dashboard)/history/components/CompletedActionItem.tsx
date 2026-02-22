@@ -1,6 +1,5 @@
-import { Heading, Text } from '@radix-ui/themes';
+import { Text, Badge } from '@radix-ui/themes';
 import { CheckCircledIcon, ClockIcon } from '@radix-ui/react-icons';
-import { Badge } from '@/app/components/ui/badge';
 import { cn } from '@/app/lib/utils';
 
 interface ActionTemp {
@@ -33,21 +32,16 @@ export function CompletedActionItem({ action, isLast }: CompletedActionItemProps
             </div>
 
             <div className="flex-1 flex flex-row items-center justify-between gap-4">
-                <div className="flex flex-col gap-2">
-                    <Heading size="3" as="h4" className="font-medium">{action.title}</Heading>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground">
-                        <Text size="2">{action.planName}</Text>
-                        <div className="flex items-center gap-1">
-                            <ClockIcon className="h-3 w-3" />
-                            <Text size="2">{formatActionDate(action.completedAt)}</Text>
-                        </div>
+                <div className="flex flex-col gap-1 min-w-0">
+                    <Text size="3" weight="medium" highContrast className="truncate">{action.title}</Text>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <Text size="1" weight="medium" color="gray">{action.planName}</Text>
+                        <Text size="1" color="gray">{formatActionDate(action.completedAt)}</Text>
                     </div>
                 </div>
 
                 <div className="flex-shrink-0">
-                    <Badge variant="outline" className="px-3 py-0.5 rounded-full text-xs font-semibold text-foreground bg-accent/10 border-border/80">
-                        Done
-                    </Badge>
+                    <Badge color="grass" size="1" variant="surface">Done</Badge>
                 </div>
             </div>
         </div>

@@ -74,10 +74,10 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <Heading size="3" as="h3">{plan.title}</Heading>
+                <Heading as="h3" size="4" weight="medium">{plan.title}</Heading>
               </div>
               {plan.description && (
-                <Text as="p" size="2" color="gray">{plan.description}</Text>
+                <Text as="p" size="2" color="gray" className="line-clamp-2">{plan.description}</Text>
               )}
             </div>
 
@@ -114,23 +114,25 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
           <div className="flex items-center gap-4 pt-3 pb-1">
             <Flex align="center" gap="2">
               <CalendarIcon className="h-3.5 w-3.5 text-foreground" />
-              <Text size="1" className="text-foreground">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
+              <Text size="1" color="gray">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
             </Flex>
             <Flex align="center" gap="2">
               <ClockIcon className={cn("h-3.5 w-3.5", overdue ? "text-red-500/70" : "text-foreground")} />
-              <Text size="1" className={cn(overdue ? "text-red-500 font-medium" : "text-foreground")}>
-                {daysLeft >= 0 ? `${daysLeft} days left` : `${Math.abs(daysLeft)} days overdue`}
-              </Text>
+              {overdue ? (
+                <Text size="1" color="red" weight="medium">Overdue</Text>
+              ) : (
+                <Text size="1" color="gray">{daysLeft} days left</Text>
+              )}
             </Flex>
           </div>
 
           <div className="space-y-2 pt-3">
-            <div className="flex items-center justify-between text-[11px] font-medium tracking-wide text-muted-foreground">
-              <span className="uppercase tracking-wider">Progress</span>
-              <span>{progress}%</span>
+            <div className="flex items-center justify-between">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wider">Progress</Text>
+              <Text size="2" weight="bold" highContrast>{progress}%</Text>
             </div>
             <Progress value={progress} className="h-1.5 dark:bg-muted/40" />
-            <Text size="1" className="text-muted-foreground/60">
+            <Text size="1" color="gray">
               {planActions.filter(a => a.status === 'done').length} of {activeActions.length} actions completed
             </Text>
           </div>
@@ -142,20 +144,19 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
               variant="ghost"
               size="sm"
               onClick={() => setExpanded(!expanded)}
-              className="gap-1.5 h-8 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-full px-3"
+              className="gap-1.5 h-8 hover:bg-muted/40 rounded-full px-3"
             >
               {expanded ? <ChevronUpIcon className="h-3.5 w-3.5" /> : <ChevronDownIcon className="h-3.5 w-3.5" />}
-              {planActions.length} {planActions.length === 1 ? 'Action' : 'Actions'}
+              <Text size="2" weight="medium" highContrast>{planActions.length} {planActions.length === 1 ? 'Action' : 'Actions'}</Text>
             </Button>
 
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowCreateAction(true)}
-              className="gap-1 h-8 text-[12px] font-medium text-primary hover:text-primary hover:bg-primary/10 rounded-full px-3 pointer-events-auto"
+              className="h-8 hover:bg-primary/10 rounded-full px-3 pointer-events-auto"
             >
-              <PlusIcon className="h-3.5 w-3.5" />
-              Add Action
+              <Text size="2" weight="medium" color="violet">+ Add actions</Text>
             </Button>
           </div>
 
