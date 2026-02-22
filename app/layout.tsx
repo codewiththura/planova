@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import { Theme } from "@radix-ui/themes";
-import { AppLayout } from "./components/AppLayout";
 import { ThemeProvider } from "./components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -20,9 +19,7 @@ export default function RootLayout({
       <body className="bg-background min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Theme appearance="inherit" accentColor="violet">
-            <AppLayout>
-              {children}
-            </AppLayout>
+            {children}
           </Theme>
         </ThemeProvider>
       </body>
