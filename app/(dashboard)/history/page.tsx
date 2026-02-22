@@ -11,12 +11,12 @@ import { formatDate, formatDateTime } from '@/app/utils/helpers';
 import { Badge } from '@/app/components/ui/badge';
 import { cn } from '@/app/lib/utils';
 import { Input } from '@/app/components/ui/input';
+import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
 
 type SortField = 'completedAt' | 'startDate';
-type SortDirection = 'asc' | 'desc';
 
-const sortOptions: Record<SortField, { label: string, asc: string, desc: string }> = {
-    completedAt: { label: 'Completed Date', asc: 'Oldest → Newest', desc: 'Newest → Oldest' },
+const sortOptions: Record<SortField, { label: string, asc: string, desc: string, defaultDirection?: SortDirection }> = {
+    completedAt: { label: 'Completed Date', asc: 'Oldest → Newest', desc: 'Newest → Oldest', defaultDirection: 'desc' },
     startDate: { label: 'Start Date', asc: 'Earliest → Latest', desc: 'Latest → Earliest' },
 };
 
@@ -219,39 +219,13 @@ export default function HistoryPage() {
                     </div>
 
                     <div className="shrink-0">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="gap-2 rounded-full h-10 px-4 hover:bg-muted/50">
-                                    <Text size="2" weight="regular" className="text-muted-foreground flex items-center gap-1.5 whitespace-nowrap">
-                                        Sort By:{" "}
-                                        {sortOptions[sortField].label}
-                                        {sortDirection === 'asc' ? <ArrowUpIcon className="h-3 w-3 text-muted-foreground" /> : <ArrowDownIcon className="h-3 w-3 text-muted-foreground" />}
-                                    </Text>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-[200px] rounded-xl z-50 p-2">
-                                <DropdownMenuGroup>
-                                    <DropdownMenuLabel className="text-muted-foreground font-normal text-xs mb-1 px-3">SORT BY</DropdownMenuLabel>
-                                    {Object.entries(sortOptions).map(([key, option]) => {
-                                        const isSelected = sortField === key;
-                                        const displayDirection = isSelected ? sortDirection : (key === 'completedAt' ? 'desc' : 'asc');
-                                        const labelText = option.label;
-                                        const directionText = option[displayDirection as SortDirection];
-
-                                        return (
-                                            <DropdownMenuItem
-                                                key={key}
-                                                onClick={() => handleSortChange(key as SortField)}
-                                                className={`py-1 my-1 px-3 flex flex-col items-start gap-0.5 cursor-pointer ${isSelected ? 'bg-primary/10 dark:bg-primary/40 text-primary dark:text-white focus:bg-primary/15' : ''}`}
-                                            >
-                                                <span className="font-semibold">{labelText}</span>
-                                                <span className="text-xs opacity-70 dark:text-gray-400">{directionText}</span>
-                                            </DropdownMenuItem>
-                                        );
-                                    })}
-                                </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <SortDropdown
+                            sortOptions={sortOptions}
+                            sortField={sortField}
+                            sortDirection={sortDirection}
+                            onSortChange={handleSortChange}
+                            align="end"
+                        />
                     </div>
                 </div>
             </div>

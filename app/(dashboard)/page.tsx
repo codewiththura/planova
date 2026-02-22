@@ -12,11 +12,11 @@ import { Heading, Text } from '@radix-ui/themes';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel } from '@/app/components/ui/dropdown-menu';
 import { calculateProgress } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
+import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
 
 type SortField = 'start_date' | 'progress' | 'task_count';
-type SortDirection = 'asc' | 'desc';
 
-const sortOptions: Record<SortField, { label: string, asc: string, desc: string }> = {
+const sortOptions: Record<SortField, { label: string, asc: string, desc: string, defaultDirection?: SortDirection }> = {
   start_date: { label: 'Start Date', asc: 'Earliest → Latest', desc: 'Latest → Earliest' },
   progress: { label: 'Progress', asc: 'Least → Most', desc: 'Most → Least' },
   task_count: { label: 'Task Count', asc: 'Fewest → Most', desc: 'Most → Fewest' }
@@ -241,40 +241,13 @@ export default function Dashboard() {
 
         <div className="flex items-center justify-between gap-3">
           <div className="shrink-0">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2 rounded-full h-10 px-4 hover:bg-muted/50">
-                  {/* <MixerHorizontalIcon className="h-4 w-4 text-muted-foreground md:flex hidden" /> */}
-                  <Text size="2" weight="regular" className="text-muted-foreground flex items-center gap-1.5 whitespace-nowrap">
-                    Sort By:{" "}
-                    {sortOptions[sortField].label}
-                    {sortDirection === 'asc' ? <ArrowUpIcon className="h-3 w-3 text-muted-foreground" /> : <ArrowDownIcon className="h-3 w-3 text-muted-foreground" />}
-                  </Text>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[200px] rounded-xl z-50 p-2">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-muted-foreground font-normal text-xs mb-1 px-3">SORT BY</DropdownMenuLabel>
-                  {Object.entries(sortOptions).map(([key, option]) => {
-                    const isSelected = sortField === key;
-                    const displayDirection = isSelected ? sortDirection : 'asc';
-                    const labelText = option.label;
-                    const directionText = option[displayDirection as SortDirection];
-
-                    return (
-                      <DropdownMenuItem
-                        key={key}
-                        onClick={() => handleSortChange(key as SortField)}
-                        className={`py-1 my-1 px-3 flex flex-col items-start gap-0.5 cursor-pointer ${isSelected ? 'bg-primary/10 dark:bg-primary/40 text-primary dark:text-white focus:bg-primary/15' : ''}`}
-                      >
-                        <span className="font-semibold">{labelText}</span>
-                        <span className="text-xs opacity-70 dark:text-gray-400">{directionText}</span>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SortDropdown
+              sortOptions={sortOptions}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSortChange={handleSortChange}
+              align="start"
+            />
           </div>
           <div className="md:hidden">
             <DropdownMenu>
