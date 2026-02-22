@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
-import { Button } from '@/app/components/ui/button';
-import { Input } from '@/app/components/ui/input';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { CalendarIcon, ClockIcon } from '@radix-ui/react-icons';
+import { CalendarIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
+import { Heading, Text, TextField, Button, Flex, Theme, Badge } from '@radix-ui/themes';
 
 interface CreateActionDialogProps {
   open: boolean;
@@ -36,8 +35,6 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
 
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const [startTimeOpen, setStartTimeOpen] = useState(false);
-  const [endTimeOpen, setEndTimeOpen] = useState(false);
   const [isError, setIsError] = useState(false);
 
   React.useEffect(() => {
@@ -50,8 +47,6 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
       setIsError(false);
       setStartDateOpen(false);
       setEndDateOpen(false);
-      setStartTimeOpen(false);
-      setEndTimeOpen(false);
     }
   }, [open, planStartDate]);
 
@@ -97,7 +92,7 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
     };
 
     return (
-      <div className="flex bg-background border rounded-lg overflow-hidden h-[180px] w-[220px]">
+      <div className="flex bg-background border border-border rounded-lg overflow-hidden h-[180px] w-[200px]">
         <ScrollArea className="flex-1 border-r">
           <div className="p-1 space-y-1">
             {hours.map((h) => (
@@ -105,7 +100,7 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
                 key={h}
                 type="button"
                 className={cn(
-                  "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted",
+                  "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
                   hour === h && "bg-primary text-primary-foreground hover:bg-primary"
                 )}
                 onClick={() => {
@@ -125,7 +120,7 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
                 key={m}
                 type="button"
                 className={cn(
-                  "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted",
+                  "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
                   minute === m && "bg-primary text-primary-foreground hover:bg-primary"
                 )}
                 onClick={() => {
@@ -144,7 +139,7 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
               key={p}
               type="button"
               className={cn(
-                "w-full text-center py-1 rounded-md font-medium text-sm transition-colors hover:bg-muted",
+                "w-full text-center py-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
                 period === p && "bg-primary text-primary-foreground hover:bg-primary"
               )}
               onClick={() => {
@@ -196,155 +191,177 @@ export function CreateActionDialog({ open, onOpenChange, planTitle, planStartDat
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
-        <style>
-          {`
-            @keyframes shake-error {
-              0%, 100% { transform: translateX(0); }
-              20% { transform: translateX(-2px); }
-              40% { transform: translateX(3px); }
-              60% { transform: translateX(-3px); }
-              80% { transform: translateX(2px); }
-            }
-            .animate-shake-error {
-              animation: shake-error 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-            }
-          `}
-        </style>
-        <DialogHeader className="space-y-1.5 pb-2">
-          <DialogTitle className="text-[20px] font-semibold tracking-tight">Add New Action</DialogTitle>
-          <DialogDescription className="text-[14px] text-muted-foreground/80">
-            Action for Plan: <span className="font-medium text-foreground/80">{planTitle}</span>
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4 mb-4">
-            <div className="grid gap-2">
-              <label className="text-[13px] font-medium text-foreground/90 ml-0.5" htmlFor="action-title">
-                Action Title <span className="text-red-500/80">*</span>
-              </label>
-              <Input
-                id="action-title"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  if (isError) setIsError(false);
-                }}
-                placeholder="e.g., Complete market research"
-                required
-                autoFocus
-                className={cn(
-                  "h-10 px-3 bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 placeholder:text-muted-foreground/40 rounded-[8px] text-[14px]",
-                  isError && "animate-shake-error border-red-500/50 focus-visible:ring-red-500/20 focus-visible:border-red-500/50"
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-3">
-              {/* Start Date & Time */}
+        <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false} style={{ display: 'contents' }}>
+          <style>
+            {`
+              @keyframes shake-error {
+                0%, 100% { transform: translateX(0); }
+                20% { transform: translateX(-2px); }
+                40% { transform: translateX(3px); }
+                60% { transform: translateX(-3px); }
+                80% { transform: translateX(2px); }
+              }
+              .animate-shake-error {
+                animation: shake-error 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+              }
+              /* Explicitly enforce the radius when within Theme display: contents */
+              .rt-TextFieldRoot, .rt-TextAreaRoot, .rt-Button {
+                border-radius: var(--radius-4) !important;
+              }
+              /* Adjust placeholder size to match proportion request */
+              .rt-TextFieldRoot input::placeholder, 
+              .rt-TextAreaRoot textarea::placeholder {
+                font-size: 13px !important;
+              }
+              /* Scale custom components to match Radix 90% scaling */
+              .theme-scale-90 {
+                zoom: 0.9;
+              }
+            `}
+          </style>
+          <DialogHeader className="space-y-1.5 pb-1">
+            <DialogTitle asChild>
+              <Heading size="4" weight="medium" highContrast>Add New Action</Heading>
+            </DialogTitle>
+            <DialogDescription asChild>
+              <Flex gap="2" align="center" className="mt-1">
+                <Text size="2" color="gray">Action for Plan:</Text>
+                <Badge size="1" color="violet" variant="soft" radius="medium">{planTitle}</Badge>
+              </Flex>
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-1 mb-4">
               <div className="grid gap-2">
-                <label className="text-[13px] font-medium text-muted-foreground ml-0.5">From</label>
-                <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className={cn("h-10 justify-start text-left font-normal bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 rounded-[8px]", !startDate && "text-muted-foreground/60")}
-                    >
-                      <CalendarIcon className="mr-2.5 h-4 w-4 opacity-60" />
-                      <span className="truncate">{startDate ? `${formatDate(startDate.toISOString())}${startTime ? ` ${formatTimeStr(startTime)}` : ''}` : 'Select date & time'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-1" align="start">
-                    <div className="flex flex-col items-center sm:flex-row gap-4">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={(date) => {
-                          setStartDate(date);
-                          if (!date) setEndDate(undefined);
-                        }}
-                        disabled={(date) => {
-                          if (!planStartDate || !planEndDate) return false;
-                          const planStart = new Date(planStartDate); planStart.setHours(0, 0, 0, 0);
-                          const planEnd = new Date(planEndDate); planEnd.setHours(23, 59, 59, 999);
-                          return date < planStart || date > planEnd;
-                        }}
-                        initialFocus
-                      />
-                      {/* <div className="flex flex-col gap-2"> */}
-                      {/* <div className="text-sm font-medium text-center mb-1 text-muted-foreground">Time (Optional)</div> */}
-                      <TimePickerContent value={startTime} onChange={setStartTime} onClose={() => { }} />
-                      {/* </div> */}
-                    </div>
-                    {(startDate || startTime) && (
-                      <Button variant="ghost" size="sm" className="w-full my-1 border" onClick={() => { setStartDate(undefined); setEndDate(undefined); setStartTime(''); setEndTime(''); setStartDateOpen(false); }}>Clear</Button>
-                    )}
-                  </PopoverContent>
-                </Popover>
+                <Text as="label" size="2" weight="medium" highContrast htmlFor="action-title">
+                  Action Title <Text color="red">*</Text>
+                </Text>
+                <TextField.Root
+                  id="action-title"
+                  size="3"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    if (isError) setIsError(false);
+                  }}
+                  placeholder="e.g., Complete market research"
+                  required
+                  autoFocus
+                  className={cn(isError && "animate-shake-error shadow-[0_0_0_1px_rgba(239,68,68,0.5)]")}
+                />
               </div>
 
-              {/* End Date & Time */}
-              <div className="grid gap-2">
-                <label className="text-[13px] font-medium text-muted-foreground ml-0.5">To</label>
-                <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className={cn("h-10 justify-start text-left font-normal bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 rounded-[8px]", !endDate && "text-muted-foreground/60")}
-                    >
-                      <CalendarIcon className="mr-2.5 h-4 w-4 opacity-60" />
-                      <span className="truncate">{endDate ? `${formatDate(endDate.toISOString())}${endTime ? ` ${formatTimeStr(endTime)}` : ''}` : 'Select date & time'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-1" align="start">
-                    <div className="flex flex-col items-center sm:flex-row gap-4">
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={(date) => {
-                          setEndDate(date);
-                        }}
-                        disabled={(date) => {
-                          let minDate = startDate ? new Date(startDate) : (planStartDate ? new Date(planStartDate) : null);
-                          if (minDate) minDate.setHours(0, 0, 0, 0);
-                          let maxDate = planEndDate ? new Date(planEndDate) : null;
-                          if (maxDate) maxDate.setHours(23, 59, 59, 999);
-                          return !!((minDate && date < minDate) || (maxDate && date > maxDate));
-                        }}
-                        initialFocus
-                      />
-                      {/* <div className="flex flex-col gap-2"> */}
-                      {/* <div className="text-sm font-medium text-center mb-1 text-muted-foreground">Time (Optional)</div> */}
-                      <TimePickerContent value={endTime} onChange={setEndTime} onClose={() => { }} />
-                      {/* </div> */}
-                    </div>
-                    {(endDate || endTime) && (
-                      <Button variant="ghost" size="sm" className="w-full mt-3 border" onClick={() => { setEndDate(undefined); setEndTime(''); setEndDateOpen(false); }}>Clear</Button>
-                    )}
-                  </PopoverContent>
-                </Popover>
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                {/* Start Date & Time */}
+                <div className="grid gap-2">
+                  <Text as="label" size="2" weight="medium" highContrast>From</Text>
+                  <Popover open={startDateOpen} onOpenChange={setStartDateOpen} modal={true}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="h-10 px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] rounded-[8px] outline-none transition-all"
+                      >
+                        <Flex gap="2" align="center" style={{ width: '100%' }}>
+                          <CalendarIcon className="shrink-0 text-[var(--gray-a10)]" />
+                          <Text size="2" color={startDate ? undefined : "gray"} highContrast={!!startDate} className="truncate">
+                            {startDate ? `${formatDate(startDate.toISOString())}${startTime ? ` ${formatTimeStr(startTime)}` : ''}` : 'Select date & time'}
+                          </Text>
+                        </Flex>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-2" align="start">
+                      <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
+                        <div className="flex flex-col items-center sm:flex-row gap-4 theme-scale-90">
+                          <Calendar
+                            mode="single"
+                            selected={startDate}
+                            onSelect={(date) => {
+                              setStartDate(date);
+                              if (!date) setEndDate(undefined);
+                            }}
+                            disabled={(date) => {
+                              if (!planStartDate || !planEndDate) return false;
+                              const planStart = new Date(planStartDate); planStart.setHours(0, 0, 0, 0);
+                              const planEnd = new Date(planEndDate); planEnd.setHours(23, 59, 59, 999);
+                              return date < planStart || date > planEnd;
+                            }}
+                            initialFocus
+                          />
+                          <TimePickerContent value={startTime} onChange={setStartTime} onClose={() => { }} />
+                        </div>
+                        {(startDate || startTime) && (
+                          <div className="mt-3">
+                            <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { setStartDate(undefined); setEndDate(undefined); setStartTime(''); setEndTime(''); setStartDateOpen(false); }}>
+                              Clear
+                            </Button>
+                          </div>
+                        )}
+                      </Theme>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* End Date & Time */}
+                <div className="grid gap-2">
+                  <Text as="label" size="2" weight="medium" highContrast>To</Text>
+                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen} modal={true}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="h-10 px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] rounded-[8px] outline-none transition-all"
+                      >
+                        <Flex gap="2" align="center" style={{ width: '100%' }}>
+                          <CalendarIcon className="shrink-0 text-[var(--gray-a10)]" />
+                          <Text size="2" color={endDate ? undefined : "gray"} highContrast={!!endDate} className="truncate">
+                            {endDate ? `${formatDate(endDate.toISOString())}${endTime ? ` ${formatTimeStr(endTime)}` : ''}` : 'Select date & time'}
+                          </Text>
+                        </Flex>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-2" align="start">
+                      <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
+                        <div className="flex flex-col items-center sm:flex-row gap-4 theme-scale-90">
+                          <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={(date) => {
+                              setEndDate(date);
+                            }}
+                            disabled={(date) => {
+                              let minDate = startDate ? new Date(startDate) : (planStartDate ? new Date(planStartDate) : null);
+                              if (minDate) minDate.setHours(0, 0, 0, 0);
+                              let maxDate = planEndDate ? new Date(planEndDate) : null;
+                              if (maxDate) maxDate.setHours(23, 59, 59, 999);
+                              return !!((minDate && date < minDate) || (maxDate && date > maxDate));
+                            }}
+                            initialFocus
+                          />
+                          <TimePickerContent value={endTime} onChange={setEndTime} onClose={() => { }} />
+                        </div>
+                        {(endDate || endTime) && (
+                          <div className="mt-3">
+                            <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { setEndDate(undefined); setEndTime(''); setEndDateOpen(false); }}>
+                              Clear
+                            </Button>
+                          </div>
+                        )}
+                      </Theme>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
-          </div>
 
-          <DialogFooter className="pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="h-9 px-4 text-[13px] font-medium border-border/50 text-muted-foreground shadow-sm hover:bg-muted/40 hover:text-foreground active:scale-[0.97] transition-all duration-200 rounded-[8px]"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="h-9 px-4 text-[13px] font-medium bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] hover:from-primary/80 hover:to-primary active:scale-[0.97] transition-all duration-200 disabled:opacity-50 disabled:active:scale-100 rounded-[8px]"
-            >
-              Add Action
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="pt-4 mt-2 border-t border-border/50">
+              <Button size="3" variant="soft" color="gray" type="button" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button size="3" variant="solid" color="violet" type="submit" disabled={!title.trim() || !startDate}>
+                Add Action
+              </Button>
+            </DialogFooter>
+          </form>
+        </Theme>
       </DialogContent>
     </Dialog>
   );

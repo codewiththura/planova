@@ -35,10 +35,10 @@ export function TopNavbar() {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-2 text-sm tracking-wide">
-                    <div className="flex items-center gap-2 text-foreground hover:text-foreground transition-colors cursor-pointer">
+                    {/* <div className="flex items-center gap-2 text-foreground hover:text-foreground transition-colors cursor-pointer">
                         <Component1Icon className="h-4 w-4" />
                     </div>
-                    <DoubleArrowRightIcon className="h-4 w-4 text-foreground/50" />
+                    <DoubleArrowRightIcon className="h-4 w-4 text-foreground/50" /> */}
                     <Heading size="5" weight="medium" className="text-foreground">{getPageTitle()}</Heading>
                 </div>
 

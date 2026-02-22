@@ -67,7 +67,7 @@ export const initialCompletedPlans: Plan[] = [
         description: 'Migrate subscribers from Mailchimp to Beehiiv.',
         startDate: new Date("2025-10-10").toISOString(),
         endDate: new Date("2025-10-15").toISOString(),
-        status: 'completed',
+        status: 'closed',
         createdAt: new Date("2025-10-01").toISOString(),
         completedAt: new Date("2025-10-16").toISOString(),
     },

@@ -39,10 +39,10 @@ export function CompletedActionItem({ action, isLast }: CompletedActionItemProps
                         <Text size="1" color="gray">{formatActionDate(action.completedAt)}</Text>
                     </div>
                 </div>
-
+                {/* 
                 <div className="flex-shrink-0">
                     <Badge color="grass" size="1" variant="surface">Done</Badge>
-                </div>
+                </div> */}
             </div>
         </div>
     );

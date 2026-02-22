@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
-import { Button } from '@/app/components/ui/button';
-import { Input } from '@/app/components/ui/input';
-import { Textarea } from '@/app/components/ui/textarea';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
+import { Heading, Text, TextField, TextArea, Button, Flex, Theme } from '@radix-ui/themes';
 
 interface CreatePlanDialogProps {
   open: boolean;
@@ -65,147 +63,158 @@ export function CreatePlanDialog({ open, onOpenChange, onCreatePlan }: CreatePla
     setEndDateOpen(false);
   };
 
-  const inputClasses = "bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 placeholder:text-muted-foreground/40 rounded-[8px] text-[14px]";
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
-        <style>
-          {`
-            @keyframes shake-error {
-              0%, 100% { transform: translateX(0); }
-              20% { transform: translateX(-2px); }
-              40% { transform: translateX(3px); }
-              60% { transform: translateX(-3px); }
-              80% { transform: translateX(2px); }
-            }
-            .animate-shake-error {
-              animation: shake-error 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-            }
-          `}
-        </style>
-        <DialogHeader className="space-y-1.5 pb-2">
-          <DialogTitle className="text-[20px] font-semibold tracking-tight">Create New Plan</DialogTitle>
-          <DialogDescription className="text-[14px] text-muted-foreground/80">
-            Set a goal with a specific timeframe and break it down into actionable steps.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4 mb-4">
-            <div className="grid gap-2">
-              <label className="text-[13px] font-medium text-foreground/90 ml-0.5" htmlFor="title">
-                Plan Title <span className="text-red-500/80">*</span>
-              </label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  if (isError) setIsError(false);
-                }}
-                placeholder="e.g., Launch New Product"
-                required
-                className={cn(
-                  "h-10 px-3",
-                  inputClasses,
-                  isError && "animate-shake-error border-red-500/50 focus-visible:ring-red-500/20 focus-visible:border-red-500/50"
-                )}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-[13px] font-medium text-foreground/90 ml-0.5" htmlFor="description">
-                Description
-              </label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Optional: Add more details about this plan..."
-                rows={3}
-                className={cn(
-                  "px-3 py-2 resize-none",
-                  inputClasses
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-3">
+        <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false} style={{ display: 'contents' }}>
+          <style>
+            {`
+              @keyframes shake-error {
+                0%, 100% { transform: translateX(0); }
+                20% { transform: translateX(-2px); }
+                40% { transform: translateX(3px); }
+                60% { transform: translateX(-3px); }
+                80% { transform: translateX(2px); }
+              }
+              .animate-shake-error {
+                animation: shake-error 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+              }
+              /* Explicitly enforce the radius when within Theme display: contents */
+              .rt-TextFieldRoot, .rt-TextAreaRoot, .rt-Button {
+                border-radius: var(--radius-4) !important;
+              }
+              /* Adjust placeholder size to match proportion request */
+              .rt-TextFieldRoot input::placeholder, 
+              .rt-TextAreaRoot textarea::placeholder {
+                font-size: 13px !important;
+              }
+              /* Scale custom components to match Radix 90% scaling */
+              .theme-scale-90 {
+                zoom: 0.9;
+              }
+            `}
+          </style>
+          <DialogHeader className="space-y-1.5 pb-1">
+            <DialogTitle asChild>
+              <Heading size="4" weight="medium" highContrast>Create New Plan</Heading>
+            </DialogTitle>
+            <DialogDescription asChild>
+              <Text size="2" color="gray" as="p">
+                Set a goal with a specific timeframe and break it down into actionable steps.
+              </Text>
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-1 mb-4">
               <div className="grid gap-2">
-                <label className="text-[13px] font-medium text-muted-foreground ml-0.5">Start Date <span className="text-red-500/80">*</span></label>
-                <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className={cn(
-                        "h-10 justify-start text-left font-normal bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 rounded-[8px]",
-                        !startDate && "text-muted-foreground/60"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2.5 h-4 w-4 opacity-60" />
-                      <span className="truncate">{startDate ? formatDate(startDate.toISOString()) : 'Select date'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={handleStartDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Text as="label" size="2" weight="medium" highContrast htmlFor="title">
+                  Plan Title <Text color="red">*</Text>
+                </Text>
+                <TextField.Root
+                  id="title"
+                  size="3"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    if (isError) setIsError(false);
+                  }}
+                  placeholder="e.g., Launch New Product"
+                  required
+                  className={cn(isError && "animate-shake-error shadow-[0_0_0_1px_rgba(239,68,68,0.5)]")}
+                />
               </div>
 
               <div className="grid gap-2">
-                <label className="text-[13px] font-medium text-muted-foreground ml-0.5">End Date <span className="text-red-500/80">*</span></label>
-                <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className={cn(
-                        "h-10 justify-start text-left font-normal bg-background border-border/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-200 rounded-[8px]",
-                        !endDate && "text-muted-foreground/60"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2.5 h-4 w-4 opacity-60" />
-                      <span className="truncate">{endDate ? formatDate(endDate.toISOString()) : 'Select date'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={handleEndDateSelect}
-                      disabled={(date) => startDate ? date < startDate : false}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Text as="label" size="2" weight="medium" highContrast htmlFor="description">
+                  Description
+                </Text>
+                <TextArea
+                  id="description"
+                  size="3"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Optional: Add more details about this plan..."
+                  rows={3}
+                  className="resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div className="grid gap-2">
+                  <Text as="label" size="2" weight="medium" highContrast>Start Date <Text color="red">*</Text></Text>
+                  <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="h-10 px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] rounded-[8px] outline-none transition-all"
+                      >
+                        <Flex gap="2" align="center">
+                          <CalendarIcon />
+                          {startDate ? (
+                            <Text size="2" highContrast>{formatDate(startDate.toISOString())}</Text>
+                          ) : (
+                            <Text size="2" color="gray">Select date</Text>
+                          )}
+                        </Flex>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <div className="theme-scale-90">
+                        <Calendar
+                          mode="single"
+                          selected={startDate}
+                          onSelect={handleStartDateSelect}
+                          initialFocus
+                        />
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="grid gap-2">
+                  <Text as="label" size="2" weight="medium" highContrast>End Date <Text color="red">*</Text></Text>
+                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="h-10 px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] rounded-[8px] outline-none transition-all"
+                      >
+                        <Flex gap="2" align="center">
+                          <CalendarIcon />
+                          {endDate ? (
+                            <Text size="2" highContrast>{formatDate(endDate.toISOString())}</Text>
+                          ) : (
+                            <Text size="2" color="gray">Select date</Text>
+                          )}
+                        </Flex>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <div className="theme-scale-90">
+                        <Calendar
+                          mode="single"
+                          selected={endDate}
+                          onSelect={handleEndDateSelect}
+                          disabled={(date) => startDate ? date < startDate : false}
+                          initialFocus
+                        />
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
-          </div>
 
-          <DialogFooter className="pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="h-9 px-4 text-[13px] font-medium border-border/50 text-muted-foreground shadow-sm hover:bg-muted/40 hover:text-foreground active:scale-[0.97] transition-all duration-200 rounded-[8px]"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={!title.trim() || !startDate || !endDate}
-              className="h-9 px-4 text-[13px] font-medium bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] hover:from-primary/80 hover:to-primary active:scale-[0.97] transition-all duration-200 disabled:opacity-50 disabled:active:scale-100 rounded-[8px]"
-            >
-              Create Plan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="pt-2">
+              <Button size="3" variant="soft" color="gray" type="button" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button size="3" variant="solid" color="violet" type="submit" disabled={!title.trim() || !startDate || !endDate}>
+                Create Plan
+              </Button>
+            </DialogFooter>
+          </form>
+        </Theme>
       </DialogContent>
     </Dialog>
   );
