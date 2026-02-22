@@ -11,6 +11,7 @@ import { PlusIcon, ChevronDownIcon, MixerHorizontalIcon, ArrowUpIcon, ArrowDownI
 import { Heading, Text } from '@radix-ui/themes';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel } from '@/app/components/ui/dropdown-menu';
 import { calculateProgress } from '@/app/utils/helpers';
+import { cn } from '@/app/lib/utils';
 
 type SortField = 'start_date' | 'progress' | 'task_count';
 type SortDirection = 'asc' | 'desc';
@@ -110,7 +111,7 @@ export default function Dashboard() {
   const [plans, setPlans] = useState<Plan[]>(initialPlans);
   const [actions, setActions] = useState<Action[]>(initialActions);
   const [showCreatePlan, setShowCreatePlan] = useState(false);
-  const [mobileFilter, setMobileFilter] = useState<'not_started' | 'in_progress' | 'overdue'>('in_progress');
+  const [mobileFilter, setMobileFilter] = useState<'coming_up' | 'ongoing' | 'overdue'>('ongoing');
   const [sortField, setSortField] = useState<SortField>('start_date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,7 +169,7 @@ export default function Dashboard() {
   };
 
   const handleUpdatePlanStatus = (planId: string, status: PlanStatus) => {
-    setPlans(plans.map(p => p.id === planId ? { ...p, status } : p));
+    setPlans(plans.map(p => p.id === planId ? { ...p, status, ...(status === 'completed' ? { completedAt: new Date().toISOString() } : status === 'closed' ? { closedAt: new Date().toISOString() } : {}) } : p));
   };
 
   const activePlans = plans.filter(p => {
@@ -201,25 +202,25 @@ export default function Dashboard() {
     });
   };
 
-  const notStartedPlans = sortPlans(activePlans.filter(p => new Date(p.startDate) > now));
-  const inProgressPlans = sortPlans(activePlans.filter(p => new Date(p.startDate) <= now && new Date(p.endDate) >= now));
+  const comingUpPlans = sortPlans(activePlans.filter(p => new Date(p.startDate) > now));
+  const ongoingPlans = sortPlans(activePlans.filter(p => new Date(p.startDate) <= now && new Date(p.endDate) >= now));
   const overduePlans = sortPlans(activePlans.filter(p => new Date(p.endDate) < now));
 
   const getMobilePlans = () => {
     switch (mobileFilter) {
-      case 'not_started': return notStartedPlans;
-      case 'in_progress': return inProgressPlans;
+      case 'coming_up': return comingUpPlans;
+      case 'ongoing': return ongoingPlans;
       case 'overdue': return overduePlans;
-      default: return inProgressPlans;
+      default: return ongoingPlans;
     }
   };
 
   const getFilterLabel = () => {
     switch (mobileFilter) {
-      case 'not_started': return 'Not Started';
-      case 'in_progress': return 'In Progress';
+      case 'coming_up': return 'Coming Up';
+      case 'ongoing': return 'Ongoing';
       case 'overdue': return 'Overdue';
-      default: return 'In Progress';
+      default: return 'Ongoing';
     }
   };
 
@@ -284,9 +285,9 @@ export default function Dashboard() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                <DropdownMenuItem onClick={() => setMobileFilter('not_started')} className="py-2 cursor-pointer">Not Started</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMobileFilter('in_progress')} className="py-2 cursor-pointer">In Progress</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMobileFilter('overdue')} className="py-2 cursor-pointer text-destructive focus:text-destructive">Overdue</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMobileFilter('coming_up')} className={cn("py-2 cursor-pointer", mobileFilter === 'coming_up' && "bg-primary/10 text-primary dark:bg-primary/40 focus:bg-primary/15")}>Coming Up</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMobileFilter('ongoing')} className={cn("py-2 cursor-pointer", mobileFilter === 'ongoing' && "bg-primary/10 text-primary dark:bg-primary/40 focus:bg-primary/15")}>Ongoing</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMobileFilter('overdue')} className={cn("py-2 cursor-pointer", mobileFilter === 'overdue' ? "bg-destructive/10 text-destructive dark:bg-destructive/40 focus:bg-destructive/15 focus:text-destructive" : "text-destructive focus:text-destructive")}>Overdue</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -316,7 +317,7 @@ export default function Dashboard() {
           <div className="hidden md:grid gap-6 md:grid-cols-3 items-start h-full">
             <PlanColumn
               title="Coming Up"
-              plans={notStartedPlans}
+              plans={comingUpPlans}
               actions={actions}
               onCreateAction={handleCreateAction}
               onEditAction={handleEditAction}
@@ -328,7 +329,7 @@ export default function Dashboard() {
             />
             <PlanColumn
               title="Ongoing"
-              plans={inProgressPlans}
+              plans={ongoingPlans}
               actions={actions}
               onCreateAction={handleCreateAction}
               onEditAction={handleEditAction}

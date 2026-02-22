@@ -24,5 +24,6 @@ export interface Plan {
   endDate: string;
   status: PlanStatus;
   createdAt: string;
+  completedAt?: string;
   closedAt?: string;
 }

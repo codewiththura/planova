@@ -3,8 +3,7 @@ import { Plan, Action } from '@/app/types';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
-import { Badge } from '@/app/components/ui/badge';
-import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, DotsHorizontalIcon, Pencil1Icon, TrashIcon, ArchiveIcon } from '@radix-ui/react-icons';
+import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, DotsHorizontalIcon, Pencil1Icon, TrashIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
@@ -93,14 +92,17 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
                   <Pencil1Icon className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleCompletePlan}>
-                  <CheckCircledIcon className="mr-2 h-4 w-4" />
-                  Finish
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleClosePlan}>
-                  <ArchiveIcon className="mr-2 h-4 w-4" />
-                  Archive
-                </DropdownMenuItem>
+                {planActions.length > 0 && progress === 100 ? (
+                  <DropdownMenuItem onClick={handleCompletePlan}>
+                    <CheckCircledIcon className="mr-2 h-4 w-4" />
+                    Done
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={handleClosePlan}>
+                    <CrossCircledIcon className="mr-2 h-4 w-4" />
+                    Close
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => setShowDeletePlan(true)} className="text-destructive focus:text-destructive">
                   <TrashIcon className="mr-2 h-4 w-4" />
                   Delete
@@ -198,7 +200,6 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         planEndDate={plan.endDate}
         action={actionToEdit}
         onEditAction={onEditAction}
-        onArchiveAction={(actionId: string) => onUpdateActionStatus(actionId, 'cancel')}
       />
 
       <DeleteActionDialog

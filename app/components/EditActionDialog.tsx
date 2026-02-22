@@ -5,7 +5,7 @@ import { Input } from '@/app/components/ui/input';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { CalendarIcon, ClockIcon, ArchiveIcon } from '@radix-ui/react-icons';
+import { CalendarIcon, ClockIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 import { Action } from '@/app/types';
@@ -28,10 +28,9 @@ interface EditActionDialogProps {
             endTime?: string;
         }
     ) => void;
-    onArchiveAction?: (actionId: string) => void;
 }
 
-export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onEditAction, onArchiveAction }: EditActionDialogProps) {
+export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onEditAction }: EditActionDialogProps) {
     const [title, setTitle] = useState('');
     const [startDate, setStartDate] = useState<Date | undefined>();
     const [endDate, setEndDate] = useState<Date | undefined>();
@@ -320,22 +319,7 @@ export function EditActionDialog({ open, onOpenChange, planTitle, planStartDate,
                         </div>
                     </div>
 
-                    <DialogFooter className="pt-2 sm:justify-between w-full">
-                        {onArchiveAction && action && action.status !== 'cancel' ? (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => {
-                                    onArchiveAction(action.id);
-                                    onOpenChange(false);
-                                }}
-                                className="h-9 px-3 text-muted-foreground hover:text-warning hover:bg-warning/10 transition-colors"
-                            >
-                                <ArchiveIcon className="mr-2 h-4 w-4" />
-                                <span className="text-[13px] font-medium">Archive</span>
-                            </Button>
-                        ) : <div />}
-
+                    <DialogFooter className="pt-2 sm:justify-end w-full">
                         <div className="flex gap-2 mt-2 sm:mt-0">
                             <Button
                                 type="button"
