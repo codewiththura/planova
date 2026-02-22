@@ -5,11 +5,12 @@ import { Plan } from '@/app/types';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel } from '@/app/components/ui/dropdown-menu';
-import { ArrowUpIcon, ArrowDownIcon, CheckCircledIcon, CrossCircledIcon, ChevronDownIcon, ClockIcon, CalendarIcon } from '@radix-ui/react-icons';
+import { ArrowUpIcon, ArrowDownIcon, CheckCircledIcon, CrossCircledIcon, ChevronDownIcon, ClockIcon, CalendarIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Heading, Text } from '@radix-ui/themes';
 import { formatDate, formatDateTime } from '@/app/utils/helpers';
 import { Badge } from '@/app/components/ui/badge';
 import { cn } from '@/app/lib/utils';
+import { Input } from '@/app/components/ui/input';
 
 type SortField = 'completedAt' | 'startDate';
 type SortDirection = 'asc' | 'desc';
@@ -137,6 +138,7 @@ export default function HistoryPage() {
     const [visibleCount, setVisibleCount] = useState(3);
     const [visibleActionCount, setVisibleActionCount] = useState(5);
     const [mobileFilter, setMobileFilter] = useState<'plans' | 'actions'>('plans');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleSortChange = (field: SortField) => {
         if (sortField === field) {
@@ -147,7 +149,13 @@ export default function HistoryPage() {
         }
     };
 
-    const sortedPlans = [...plans].sort((a, b) => {
+    const filteredPlans = plans.filter(p => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return p.title.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
+    });
+
+    const sortedPlans = [...filteredPlans].sort((a, b) => {
         let comparison = 0;
         if (sortField === 'completedAt') {
             comparison = new Date(a.completedAt || a.closedAt || a.endDate).getTime() - new Date(b.completedAt || b.closedAt || b.endDate).getTime();
@@ -159,8 +167,15 @@ export default function HistoryPage() {
 
     const visiblePlans = sortedPlans.slice(0, visibleCount);
     const hasMore = visibleCount < sortedPlans.length;
-    const visibleActions = initialCompletedActions.slice(0, visibleActionCount);
-    const hasMoreActions = visibleActionCount < initialCompletedActions.length;
+
+    const filteredActions = initialCompletedActions.filter(a => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return a.title.toLowerCase().includes(query) || a.planName.toLowerCase().includes(query);
+    });
+
+    const visibleActions = filteredActions.slice(0, visibleActionCount);
+    const hasMoreActions = visibleActionCount < filteredActions.length;
 
     const formatActionDate = (dateString?: string) => {
         if (!dateString) return 'N/A';
@@ -174,8 +189,20 @@ export default function HistoryPage() {
 
     return (
         <div className="container mx-auto px-6 max-w-[1600px]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 mb-5 md:mb-6">
-                <div className="flex flex-row-reverse items-center justify-between w-full gap-3 ">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 md:mb-6">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:w-[280px]">
+                        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search history..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 rounded-full h-10 bg-background"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex flex-row-reverse items-center justify-between gap-3">
                     <div className="sm:hidden">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
