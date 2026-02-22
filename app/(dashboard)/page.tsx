@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { calculateProgress } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
+import { SearchBar } from '@/app/components/SearchBar';
 
 type SortField = 'start_date' | 'progress' | 'task_count';
 
@@ -227,17 +228,11 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-6 max-w-[1600px]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 md:mb-6">
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-[280px]">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search plans..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 rounded-full h-10 bg-background"
-            />
-          </div>
-        </div>
+        <SearchBar
+          placeholder="Search plans..."
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
 
         <div className="flex items-center justify-between gap-3">
           <div className="shrink-0">
