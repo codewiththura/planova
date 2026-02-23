@@ -55,7 +55,7 @@ export function DeleteDialog({
                         <Flex gap="3" justify="end" mt="2">
                             <AlertDialog.Cancel>
                                 <Button
-                                    size="2"
+                                    size="3"
                                     variant="soft"
                                     color="gray"
                                     onClick={() => onOpenChange(false)}
@@ -66,7 +66,7 @@ export function DeleteDialog({
                             </AlertDialog.Cancel>
                             <AlertDialog.Action>
                                 <Button
-                                    size="2"
+                                    size="3"
                                     variant="solid"
                                     color="red"
                                     onClick={handleDelete}
