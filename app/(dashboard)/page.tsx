@@ -5,7 +5,7 @@ import { Plan, Action, ActionStatus, PlanStatus } from '@/app/types';
 import { Button } from '@/app/components/ui/button';
 import { PlanCard } from '@/app/(dashboard)/components/PlanCard';
 import { PlanColumn } from '@/app/(dashboard)/components/PlanColumn';
-import { CreatePlanDialog } from '@/app/(dashboard)/components/CreatePlanDialog';
+import { PlanDialog } from '@/app/(dashboard)/components/PlanDialog';
 import { PlusIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { Heading, Text } from '@radix-ui/themes';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/app/components/ui/dropdown-menu';
@@ -271,10 +271,10 @@ export default function Dashboard() {
         </>
       )}
 
-      <CreatePlanDialog
+      <PlanDialog
         open={showCreatePlan}
         onOpenChange={setShowCreatePlan}
-        onCreatePlan={handleCreatePlan}
+        onSave={(newPlan) => handleCreatePlan(newPlan)}
       />
     </div>
   );

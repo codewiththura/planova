@@ -7,9 +7,8 @@ import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, Chec
 import { Heading, Text, Flex } from '@radix-ui/themes';
 import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
-import { CreateActionDialog } from './CreateActionDialog';
-import { EditActionDialog } from './EditActionDialog';
-import { EditPlanDialog } from './EditPlanDialog';
+import { ActionDialog } from './ActionDialog';
+import { PlanDialog } from './PlanDialog';
 import { DeletePlanDialog } from './DeletePlanDialog';
 import { DeleteActionDialog } from './DeleteActionDialog';
 import { cn } from '@/app/lib/utils';
@@ -182,16 +181,16 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         </CardContent>
       </Card>
 
-      <CreateActionDialog
+      <ActionDialog
         open={showCreateAction}
         onOpenChange={setShowCreateAction}
         planTitle={plan.title}
         planStartDate={plan.startDate}
         planEndDate={plan.endDate}
-        onCreateAction={handleCreateAction}
+        onSave={(title, options) => handleCreateAction(title, options)}
       />
 
-      <EditActionDialog
+      <ActionDialog
         open={!!actionToEdit}
         onOpenChange={(open) => {
           if (!open) setActionToEdit(null);
@@ -200,7 +199,11 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         planStartDate={plan.startDate}
         planEndDate={plan.endDate}
         action={actionToEdit}
-        onEditAction={onEditAction}
+        onSave={(title, options, actionId) => {
+          if (actionId) {
+            onEditAction(actionId, title, options);
+          }
+        }}
       />
 
       <DeleteActionDialog
@@ -212,11 +215,11 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         onDeleteAction={onDeleteAction}
       />
 
-      <EditPlanDialog
+      <PlanDialog
         open={showEditPlan}
         onOpenChange={setShowEditPlan}
         plan={plan}
-        onEditPlan={onEditPlan}
+        onSave={(planData) => onEditPlan(plan.id, planData)}
       />
 
       <DeletePlanDialog
