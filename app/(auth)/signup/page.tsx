@@ -1,78 +1,95 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '@/app/components/ui/button'
-import { Input } from '@/app/components/ui/input'
-import { Label } from '@/app/components/ui/label'
 import { continueWithGoogle, signupWithEmail } from '@/app/actions/auth'
 import { Chrome } from 'lucide-react'
+import {
+    Heading,
+    Text,
+    TextField,
+    Link as RadixLink,
+    Button,
+    Flex,
+} from '@radix-ui/themes'
 
 export default function SignUpPage() {
     return (
         <div className="flex min-h-screen items-center justify-center p-4 bg-background">
-            <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-10 shadow-2xl ring-1 ring-border/50">
-                <div className="text-center space-y-2">
-                    <h1 className="text-4xl font-bold tracking-tight text-foreground">Create an account</h1>
-                    <p className="text-sm text-muted-foreground">Sign up to get started with Planova</p>
+            <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-2xl ring-1 ring-border/50">
+                <div className="text-center mb-8">
+                    <Heading size="7" weight="bold" highContrast className="text-center">
+                        Create an account
+                    </Heading>
+                    <Text as="p" size="2" color="gray" className="text-center">
+                        Sign up to get started with Planova
+                    </Text>
                 </div>
 
-                <form action={signupWithEmail} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
+                <form action={signupWithEmail}>
+                    <Flex direction="column" gap="6">
+                        <Flex direction="column" gap="2">
+                            <Text as="label" size="2" weight="medium" highContrast htmlFor="email">
+                                Email
+                            </Text>
+                            <TextField.Root
                                 id="email"
                                 name="email"
                                 type="email"
+                                size="3"
                                 placeholder="m@example.com"
                                 required
-                                className="h-12 bg-background/50 focus-visible:ring-violet-500"
                             />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
+                        </Flex>
+                        <Flex direction="column" gap="2">
+                            <Text as="label" size="2" weight="medium" highContrast htmlFor="password">
+                                Password
+                            </Text>
+                            <TextField.Root
                                 id="password"
                                 name="password"
                                 type="password"
+                                size="3"
                                 required
-                                className="h-12 bg-background/50 focus-visible:ring-violet-500"
                             />
-                        </div>
-                    </div>
+                        </Flex>
 
-                    <Button type="submit" className="w-full h-12 text-md font-medium bg-violet-600 hover:bg-violet-700 text-white transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_25px_rgba(124,58,237,0.5)]">
-                        Sign Up
-                    </Button>
+                        <Button size="3" variant="solid" color="violet" style={{ width: '100%' }} className="cursor-pointer">
+                            Sign Up
+                        </Button>
+                    </Flex>
                 </form>
 
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                    </div>
+                <div className="flex items-center my-5">
+                    <div className="flex-grow border-t border-border"></div>
+                    <Text size="1" weight="medium" className="uppercase tracking-wider px-2 text-muted-foreground">
+                        Or continue with
+                    </Text>
+                    <div className="flex-grow border-t border-border"></div>
                 </div>
 
                 <form>
                     <Button
-                        type="submit"
+                        size="3"
+                        variant="surface"
+                        color="gray"
+                        style={{ width: '100%' }}
+                        className="cursor-pointer"
                         formAction={() => continueWithGoogle('signup')}
-                        variant="outline"
-                        className="w-full h-12 text-md font-medium border-border/50 hover:bg-muted/50 transition-colors"
+                        type="submit"
                     >
-                        <Chrome className="mr-2 h-5 w-5" />
+                        <Chrome width="16" height="16" />
                         Continue with Google
                     </Button>
                 </form>
 
-                <p className="text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
-                    <Link href="/login" className="font-medium text-violet-500 hover:text-violet-400 hover:underline transition-colors">
-                        Sign in
-                    </Link>
-                </p>
+                <div className="text-center mt-4">
+                    <Text size="2" color="gray" className="text-center">
+                        Already have an account?{' '}
+                        <RadixLink asChild color="violet" weight="medium">
+                            <Link href="/login">Sign in</Link>
+                        </RadixLink>
+                    </Text>
+                </div>
             </div>
         </div>
     )
