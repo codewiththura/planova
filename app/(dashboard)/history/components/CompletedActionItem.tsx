@@ -36,7 +36,7 @@ export function CompletedActionItem({ action, isLast }: CompletedActionItemProps
                     <Text size="3" weight="medium" highContrast className="truncate">{action.title}</Text>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <Text size="1" weight="medium" color="gray">{action.planName}</Text>
-                        <Text size="1" color="gray">{formatActionDate(action.completedAt)}</Text>
+                        <Text size="1" color="gray">Completed: {formatActionDate(action.completedAt)}</Text>
                     </div>
                 </div>
                 {/* 

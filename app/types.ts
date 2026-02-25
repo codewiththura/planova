@@ -1,6 +1,6 @@
 export type ActionStatus = 'pending' | 'done' | 'cancel';
 
-export type PlanStatus = 'active' | 'completed' | 'closed';
+export type PlanStatus = 'active' | 'completed' | 'cancel';
 
 export interface Action {
   id: string;
@@ -27,5 +27,5 @@ export interface Plan {
   status: PlanStatus;
   createdAt: string;
   completedAt?: string;
-  closedAt?: string;
+  cancelledAt?: string;
 }

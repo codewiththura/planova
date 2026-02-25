@@ -124,13 +124,13 @@ export function useAppData() {
         const updates: Record<string, unknown> = { status };
         if (status === 'completed') {
             updates.completedAt = new Date().toISOString();
-            updates.closedAt = deleteField();
-        } else if (status === 'closed') {
-            updates.closedAt = new Date().toISOString();
+            updates.cancelledAt = deleteField();
+        } else if (status === 'cancel') {
+            updates.cancelledAt = new Date().toISOString();
             updates.completedAt = deleteField();
         } else {
             updates.completedAt = deleteField();
-            updates.closedAt = deleteField();
+            updates.cancelledAt = deleteField();
         }
         await updateDoc(doc(db, 'plans', planId), updates);
     };

@@ -39,7 +39,7 @@ export default function HistoryPage() {
         }
     };
 
-    const completedPlans = allPlans.filter(p => p.status === 'completed' || p.status === 'closed');
+    const completedPlans = allPlans.filter(p => p.status === 'completed' || p.status === 'cancel');
     const filteredPlans = completedPlans.filter(p => {
         if (!searchQuery.trim()) return true;
         const query = searchQuery.toLowerCase();
@@ -49,8 +49,8 @@ export default function HistoryPage() {
     const sortedPlans = [...filteredPlans].sort((a, b) => {
         let comparison = 0;
         if (sortField === 'completedAt') {
-            const dateA = a.completedAt || a.closedAt || a.endDate;
-            const dateB = b.completedAt || b.closedAt || b.endDate;
+            const dateA = a.completedAt || a.cancelledAt || a.endDate;
+            const dateB = b.completedAt || b.cancelledAt || b.endDate;
             comparison = new Date(dateA).getTime() - new Date(dateB).getTime();
         } else if (sortField === 'startDate') {
             comparison = new Date(a.startDate).getTime() - new Date(b.startDate).getTime();

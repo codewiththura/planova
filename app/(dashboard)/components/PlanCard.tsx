@@ -53,8 +53,8 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
     onUpdatePlanStatus(plan.id, 'completed');
   };
 
-  const handleClosePlan = () => {
-    onUpdatePlanStatus(plan.id, 'closed');
+  const handleCancelPlan = () => {
+    onUpdatePlanStatus(plan.id, 'cancel');
   };
 
   const isOngoing = plan.status === 'active' && !overdue && new Date(plan.startDate) <= new Date();
@@ -97,9 +97,9 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
                     Done
                   </DropdownMenuItem>
                 ) : (
-                  <DropdownMenuItem onClick={handleClosePlan}>
+                  <DropdownMenuItem onClick={handleCancelPlan}>
                     <CrossCircledIcon className="mr-2 h-4 w-4" />
-                    Close
+                    Cancel
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => setShowDeletePlan(true)} className="text-destructive focus:text-destructive">

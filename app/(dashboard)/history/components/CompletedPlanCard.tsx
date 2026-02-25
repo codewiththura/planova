@@ -23,14 +23,14 @@ export function CompletedPlanCard({ plan }: CompletedPlanCardProps) {
                     <div className="flex-1 flex flex-col gap-1 min-w-0">
                         <Text size="3" weight="medium" highContrast className="truncate">{plan.title}</Text>
                         <Text size="1" color="gray">
-                            {formatDateTime(plan.completedAt || plan.closedAt || plan.endDate)}
+                            Completed: {formatDateTime(plan.completedAt || plan.cancelledAt || plan.endDate)}
                         </Text>
                     </div>
                 </div>
 
                 <div>
                     <Badge color={plan.status === 'completed' ? 'grass' : 'gray'} size="1" variant="soft">
-                        {plan.status === 'completed' ? 'Completed' : 'Closed'}
+                        {plan.status === 'completed' ? 'Completed' : 'Cancelled'}
                     </Badge>
                 </div>
             </CardContent>
