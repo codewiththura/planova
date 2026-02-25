@@ -30,7 +30,9 @@ export default function RootLayout({
             hasBackground={false}
             scaling="90%"
           >
-            {children}
+            <div vaul-drawer-wrapper="">
+              {children}
+            </div>
           </Theme>
         </ThemeProvider>
       </body>
