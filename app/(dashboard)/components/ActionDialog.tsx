@@ -54,22 +54,26 @@ const TimePickerContent = ({
     const minutes = Array.from({ length: 60 }, (_, i) => i);
     const periods = ['AM', 'PM'];
 
-    const currentHour24 = value ? parseInt(value.split(':')[0]) : 12;
-    const currentMin = value ? parseInt(value.split(':')[1]) : 0;
+    const currentHour24 = value ? parseInt(value.split(':')[0]) : null;
+    const currentMin = value ? parseInt(value.split(':')[1]) : null;
 
-    const h12 = currentHour24 % 12 || 12;
-    const meridian = currentHour24 >= 12 ? 'PM' : 'AM';
+    const h12 = currentHour24 !== null ? (currentHour24 % 12 || 12) : null;
+    const meridian = currentHour24 !== null ? (currentHour24 >= 12 ? 'PM' : 'AM') : null;
 
-    const [hour, setHour] = useState(h12);
-    const [minute, setMinute] = useState(currentMin);
-    const [period, setPeriod] = useState(meridian);
+    const [hour, setHour] = useState<number | null>(h12);
+    const [minute, setMinute] = useState<number | null>(currentMin);
+    const [period, setPeriod] = useState<string | null>(meridian);
 
-    const handleSelect = (h: number, m: number, p: string) => {
-        let finalHour24 = h;
-        if (p === 'PM' && h !== 12) finalHour24 += 12;
-        if (p === 'AM' && h === 12) finalHour24 = 0;
+    const handleSelect = (h: number | null, m: number | null, p: string | null) => {
+        const safeHour = h !== null ? h : 12;
+        const safeMin = m !== null ? m : 0;
+        const safePeriod = p !== null ? p : 'AM';
 
-        onChange(`${finalHour24.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+        let finalHour24 = safeHour;
+        if (safePeriod === 'PM' && safeHour !== 12) finalHour24 += 12;
+        if (safePeriod === 'AM' && safeHour === 12) finalHour24 = 0;
+
+        onChange(`${finalHour24.toString().padStart(2, '0')}:${safeMin.toString().padStart(2, '0')}`);
         onClose();
     };
 
