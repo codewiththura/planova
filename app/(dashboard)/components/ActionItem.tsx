@@ -4,7 +4,7 @@ import { Action, ActionStatus } from '@/app/types';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Button } from '@/app/components/ui/button';
 import { Cross2Icon, ReloadIcon, CalendarIcon, ClockIcon, Pencil1Icon } from '@radix-ui/react-icons';
-import { formatDate } from '@/app/utils/helpers';
+import { formatDate, formatTime } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 
 interface ActionItemProps {
@@ -43,7 +43,7 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
     if (action.dateMode === 'date_range' && action.startDate && action.endDate) {
       return (
         <Text size="1" color="gray" className="flex items-center gap-1 mt-0.5">
-          <CalendarIcon className="w-3 h-3" />
+          {/* <CalendarIcon className="w-3 h-3" /> */}
           {formatDate(action.startDate)} - {formatDate(action.endDate)}
         </Text>
       );
@@ -51,17 +51,18 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
 
     if (action.dateMode === 'specific_date' && action.startDate) {
       const timeStr = (action.startTime && action.endTime)
-        ? `${action.startTime} - ${action.endTime}`
-        : action.startTime || action.endTime;
+        ? `${formatTime(action.startTime)} - ${formatTime(action.endTime)}`
+        : action.startTime ? formatTime(action.startTime) : (action.endTime ? formatTime(action.endTime) : '');
 
       return (
         <Text size="1" color="gray" className="flex items-center gap-1 mt-0.5">
-          <CalendarIcon className="w-3 h-3" />
+          {/* <CalendarIcon className="w-3 h-3" /> */}
           {formatDate(action.startDate)}
           {timeStr && (
             <>
-              <ClockIcon className="w-3 h-3 ml-1" />
-              {timeStr}
+              {/* <ClockIcon className="w-3 h-3 ml-1" /> */}
+              <span className='mx-1'>•</span>
+              <span className="text-xs">{timeStr}</span>
             </>
           )}
         </Text>

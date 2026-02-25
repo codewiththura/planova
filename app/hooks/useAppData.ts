@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { db, auth } from '@/app/lib/firebase';
 import { Plan, Action, PlanStatus, ActionStatus } from '@/app/types';
 
@@ -54,6 +54,18 @@ export function useAppData() {
         return () => unsubscribeAuth();
     }, []);
 
+    // Removes keys with undefined values — Firestore rejects them
+    const stripUndefined = <T extends object>(obj: T): Partial<T> =>
+        Object.fromEntries(
+            Object.entries(obj).filter(([, v]) => v !== undefined)
+        ) as Partial<T>;
+
+    // Replaces undefined values with deleteField() for updateDoc calls
+    const toUpdatePayload = <T extends object>(obj: T): Record<string, unknown> =>
+        Object.fromEntries(
+            Object.entries(obj).map(([k, v]) => [k, v === undefined ? deleteField() : v])
+        );
+
     const handleCreatePlan = async (newPlan: Omit<Plan, 'id' | 'userId' | 'status' | 'createdAt'>) => {
         const user = auth.currentUser;
         if (!user) return;
@@ -82,43 +94,43 @@ export function useAppData() {
         const user = auth.currentUser;
         if (!user) return;
         const newRef = doc(collection(db, 'actions'));
-        const action: Action = {
+        const action = stripUndefined({
             id: newRef.id,
             userId: user.uid,
             planId,
             title,
-            status: 'pending',
+            status: 'pending' as const,
             createdAt: new Date().toISOString(),
             ...options,
-        };
+        });
         await setDoc(newRef, action);
     };
 
     const handleEditAction = async (actionId: string, title: string, options?: Partial<Action>) => {
-        await updateDoc(doc(db, 'actions', actionId), { title, ...options });
+        await updateDoc(doc(db, 'actions', actionId), toUpdatePayload({ title, ...options }));
     };
 
     const handleUpdateActionStatus = async (actionId: string, status: ActionStatus) => {
-        const updates: Partial<Action> = { status };
+        const updates: Record<string, unknown> = { status };
         if (status === 'done') {
             updates.completedAt = new Date().toISOString();
         } else {
-            updates.completedAt = undefined;
+            updates.completedAt = deleteField();
         }
         await updateDoc(doc(db, 'actions', actionId), updates);
     };
 
     const handleUpdatePlanStatus = async (planId: string, status: PlanStatus) => {
-        const updates: Partial<Plan> = { status };
+        const updates: Record<string, unknown> = { status };
         if (status === 'completed') {
             updates.completedAt = new Date().toISOString();
-            updates.closedAt = undefined;
+            updates.closedAt = deleteField();
         } else if (status === 'closed') {
             updates.closedAt = new Date().toISOString();
-            updates.completedAt = undefined;
+            updates.completedAt = deleteField();
         } else {
-            updates.completedAt = undefined;
-            updates.closedAt = undefined;
+            updates.completedAt = deleteField();
+            updates.closedAt = deleteField();
         }
         await updateDoc(doc(db, 'plans', planId), updates);
     };
