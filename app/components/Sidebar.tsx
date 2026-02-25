@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { TargetIcon, DashboardIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
+import { DashboardIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
 import { Heading, Text } from '@radix-ui/themes';
 import { cn } from '@/app/lib/utils';
 
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import Image from 'next/image';
 const navItems = [
     { name: 'Dashboard', href: '/', icon: DashboardIcon },
     { name: 'History', href: '/history', icon: CounterClockwiseClockIcon },
@@ -46,9 +47,16 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             )}>
 
             <div className="flex h-16 items-center justify-between border-b px-5">
-                <Link href="/" className="flex items-center gap-2 font-semibold overflow-hidden">
-                    <div className="bg-primary text-primary-foreground rounded-lg me-2 p-2 shrink-0 transition-all duration-300 ease-in-out">
-                        <TargetIcon className="h-5 w-5" />
+                <Link href="/" className="flex items-center gap-2 font-semibold">
+                    <div className="shrink-0 flex items-center justify-center">
+                        <Image
+                            src="/icons/icon-512x512.png"
+                            alt="Logo"
+                            width={40}
+                            height={40}
+                            unoptimized
+                            className='border rounded-lg border-primary'
+                        />
                     </div>
                     <div className={cn(
                         "transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap",
