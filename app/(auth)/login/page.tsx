@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { continueWithGoogle, loginWithEmail } from '@/app/actions/auth'
+
 import { Chrome } from 'lucide-react'
 import {
     Heading,
@@ -11,23 +11,85 @@ import {
     Button,
     Flex,
     Box,
+    Callout,
 } from '@radix-ui/themes'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, } from 'firebase/auth'
+import { auth } from '@/app/lib/firebase'
 
 export default function LoginPage() {
+    const router = useRouter()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [errorMsg, setErrorMsg] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleEmailLogin = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsLoading(true)
+        setErrorMsg('')
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const token = await userCredential.user.getIdToken()
+            document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Strict`
+            router.push('/')
+        } catch (error: any) {
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                setErrorMsg('Invalid email or password.')
+            } else {
+                setErrorMsg('An error occurred during login.')
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleGoogleLogin = async () => {
+        setIsLoading(true)
+        setErrorMsg('')
+        try {
+            const provider = new GoogleAuthProvider()
+            const userCredential = await signInWithPopup(auth, provider)
+            const token = await userCredential.user.getIdToken()
+            document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Strict`
+            router.push('/')
+        } catch (error: any) {
+            if (error.code === 'auth/account-exists-with-different-credential') {
+                setErrorMsg('An account already exists with this email. Please sign in using your existing provider.')
+            } else {
+                setErrorMsg('An error occurred during Google sign in.')
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <div className="flex min-h-screen items-center justify-center p-4 bg-background">
             <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-2xl ring-1 ring-border/50">
-                <div className="text-center mb-8">
+                <div className="text-center mb-6">
                     <Heading size="7" weight="bold" highContrast className="text-center">
                         Welcome back
                     </Heading>
-                    <Text as="p" size="2" color="gray" className="text-center">
+                    <Text as="p" size="2" color="gray" className="text-center mt-2">
                         Sign in to your Planova account
                     </Text>
                 </div>
 
-                <form action={loginWithEmail}>
-                    <Flex direction="column" gap="6">
+                {errorMsg && (
+                    <Callout.Root color="red" className="mb-6">
+                        <Callout.Icon>
+                            <InfoCircledIcon />
+                        </Callout.Icon>
+                        <Callout.Text>{errorMsg}</Callout.Text>
+                    </Callout.Root>
+                )}
+
+                <form onSubmit={handleEmailLogin}>
+                    <Flex direction="column" gap="5">
                         <Flex direction="column" gap="2">
                             <Text as="label" size="2" weight="medium" highContrast htmlFor="email">
                                 Email
@@ -38,7 +100,10 @@ export default function LoginPage() {
                                 type="email"
                                 size="3"
                                 placeholder="m@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
+                                disabled={isLoading}
                             />
                         </Flex>
                         <Flex direction="column" gap="2">
@@ -55,12 +120,15 @@ export default function LoginPage() {
                                 name="password"
                                 type="password"
                                 size="3"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
+                                disabled={isLoading}
                             />
                         </Flex>
 
-                        <Button size="3" variant="solid" color="violet" style={{ width: '100%' }} className="cursor-pointer">
-                            Sign In
+                        <Button size="3" variant="solid" color="violet" style={{ width: '100%' }} className="cursor-pointer" type="submit" disabled={isLoading}>
+                            {isLoading ? 'Signing In...' : 'Sign In'}
                         </Button>
                     </Flex>
                 </form>
@@ -73,20 +141,21 @@ export default function LoginPage() {
                     <div className="flex-grow border-t border-border"></div>
                 </div>
 
-                <form>
+                <div>
                     <Button
                         size="3"
                         variant="surface"
                         color="gray"
                         style={{ width: '100%' }}
                         className="cursor-pointer"
-                        formAction={() => continueWithGoogle('login')}
-                        type="submit"
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={isLoading}
                     >
                         <Chrome width="16" height="16" />
                         Continue with Google
                     </Button>
-                </form>
+                </div>
 
                 <div className="text-center mt-4">
                     <Text size="2" color="gray" className="text-center">
