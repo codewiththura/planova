@@ -33,6 +33,113 @@ interface ActionDialogProps {
     ) => void;
 }
 
+const formatTimeStr = (timeStr: string) => {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(':').map(Number);
+    const suffix = h >= 12 ? 'PM' : 'AM';
+    const hour12 = h % 12 || 12;
+    return `${hour12.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${suffix}`;
+};
+
+const TimePickerContent = ({
+    value,
+    onChange,
+    onClose
+}: {
+    value: string,
+    onChange: (v: string) => void,
+    onClose: () => void
+}) => {
+    const hours = Array.from({ length: 12 }, (_, i) => i === 0 ? 12 : i);
+    const minutes = Array.from({ length: 60 }, (_, i) => i);
+    const periods = ['AM', 'PM'];
+
+    const currentHour24 = value ? parseInt(value.split(':')[0]) : 12;
+    const currentMin = value ? parseInt(value.split(':')[1]) : 0;
+
+    const h12 = currentHour24 % 12 || 12;
+    const meridian = currentHour24 >= 12 ? 'PM' : 'AM';
+
+    const [hour, setHour] = useState(h12);
+    const [minute, setMinute] = useState(currentMin);
+    const [period, setPeriod] = useState(meridian);
+
+    const handleSelect = (h: number, m: number, p: string) => {
+        let finalHour24 = h;
+        if (p === 'PM' && h !== 12) finalHour24 += 12;
+        if (p === 'AM' && h === 12) finalHour24 = 0;
+
+        onChange(`${finalHour24.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+        onClose();
+    };
+
+    return (
+        <div className='flex flex-col gap-2'>
+            <p className="text-sm text-gray">Time (optional) </p>
+            <div className="flex bg-background border border-border rounded-lg overflow-hidden h-[180px] w-[200px]">
+                <ScrollArea className="flex-1 border-r">
+                    <div className="p-1 space-y-1">
+                        {hours.map((h) => (
+                            <button
+                                key={h}
+                                type="button"
+                                className={cn(
+                                    "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
+                                    hour === h && "bg-primary text-primary-foreground hover:bg-primary"
+                                )}
+                                onClick={() => {
+                                    setHour(h);
+                                    handleSelect(h, minute, period);
+                                }}
+                            >
+                                {h.toString().padStart(2, '0')}
+                            </button>
+                        ))}
+                    </div>
+                </ScrollArea>
+                <ScrollArea className="flex-1 border-r">
+                    <div className="p-1 space-y-1">
+                        {minutes.map((m) => (
+                            <button
+                                key={m}
+                                type="button"
+                                className={cn(
+                                    "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
+                                    minute === m && "bg-primary text-primary-foreground hover:bg-primary"
+                                )}
+                                onClick={() => {
+                                    setMinute(m);
+                                    handleSelect(hour, m, period);
+                                }}
+                            >
+                                {m.toString().padStart(2, '0')}
+                            </button>
+                        ))}
+                    </div>
+                </ScrollArea>
+                <div className="flex-1 bg-muted/20 p-1 flex flex-col justify-center space-y-2">
+                    {periods.map((p) => (
+                        <button
+                            key={p}
+                            type="button"
+                            className={cn(
+                                "w-full text-center py-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
+                                period === p && "bg-primary text-primary-foreground hover:bg-primary"
+                            )}
+                            onClick={() => {
+                                setPeriod(p);
+                                handleSelect(hour, minute, p);
+                            }}
+                        >
+                            {p}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onSave }: ActionDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -67,112 +174,7 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
         }
     }, [open, action]);
 
-    const formatTimeStr = (timeStr: string) => {
-        if (!timeStr) return '';
-        const [h, m] = timeStr.split(':').map(Number);
-        const suffix = h >= 12 ? 'PM' : 'AM';
-        const hour12 = h % 12 || 12;
-        return `${hour12.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${suffix}`;
-    };
 
-    const TimePickerContent = ({
-        value,
-        onChange,
-        onClose
-    }: {
-        value: string,
-        onChange: (v: string) => void,
-        onClose: () => void
-    }) => {
-        const hours = Array.from({ length: 12 }, (_, i) => i === 0 ? 12 : i);
-        const minutes = Array.from({ length: 60 }, (_, i) => i);
-        const periods = ['AM', 'PM'];
-
-        const currentHour24 = value ? parseInt(value.split(':')[0]) : 12;
-        const currentMin = value ? parseInt(value.split(':')[1]) : 0;
-
-        const h12 = currentHour24 % 12 || 12;
-        const meridian = currentHour24 >= 12 ? 'PM' : 'AM';
-
-        const [hour, setHour] = useState(h12);
-        const [minute, setMinute] = useState(currentMin);
-        const [period, setPeriod] = useState(meridian);
-
-        const handleSelect = (h: number, m: number, p: string) => {
-            let finalHour24 = h;
-            if (p === 'PM' && h !== 12) finalHour24 += 12;
-            if (p === 'AM' && h === 12) finalHour24 = 0;
-
-            onChange(`${finalHour24.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
-            onClose();
-        };
-
-        return (
-            <div className='flex flex-col gap-2'>
-                <p className="text-sm text-gray">Time (optional) </p>
-                <div className="flex bg-background border border-border rounded-lg overflow-hidden h-[180px] w-[200px]">
-                    <ScrollArea className="flex-1 border-r">
-                        <div className="p-1 space-y-1">
-                            {hours.map((h) => (
-                                <button
-                                    key={h}
-                                    type="button"
-                                    className={cn(
-                                        "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
-                                        hour === h && "bg-primary text-primary-foreground hover:bg-primary"
-                                    )}
-                                    onClick={() => {
-                                        setHour(h);
-                                        handleSelect(h, minute, period);
-                                    }}
-                                >
-                                    {h.toString().padStart(2, '0')}
-                                </button>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                    <ScrollArea className="flex-1 border-r">
-                        <div className="p-1 space-y-1">
-                            {minutes.map((m) => (
-                                <button
-                                    key={m}
-                                    type="button"
-                                    className={cn(
-                                        "w-full text-center py-1 px-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
-                                        minute === m && "bg-primary text-primary-foreground hover:bg-primary"
-                                    )}
-                                    onClick={() => {
-                                        setMinute(m);
-                                        handleSelect(hour, m, period);
-                                    }}
-                                >
-                                    {m.toString().padStart(2, '0')}
-                                </button>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                    <div className="flex-1 bg-muted/20 p-1 flex flex-col justify-center space-y-2">
-                        {periods.map((p) => (
-                            <button
-                                key={p}
-                                type="button"
-                                className={cn(
-                                    "w-full text-center py-1 rounded-md font-medium text-sm transition-colors hover:bg-muted text-foreground",
-                                    period === p && "bg-primary text-primary-foreground hover:bg-primary"
-                                )}
-                                onClick={() => {
-                                    setPeriod(p);
-                                    handleSelect(hour, minute, p);
-                                }}
-                            >
-                                {p}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -212,7 +214,7 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
         onOpenChange(false);
     };
 
-    const ActionForm = () => (
+    const renderActionForm = () => (
         <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4 py-1", !isDesktop && "px-4 mt-2")}>
             <div className="grid gap-2">
                 <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast htmlFor="action-title">
@@ -390,7 +392,7 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
                                 </Flex>
                             </DialogDescription>
                         </DialogHeader>
-                        <ActionForm />
+                        {renderActionForm()}
                     </Theme>
                 </DialogContent>
             </Dialog>
@@ -421,7 +423,7 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
                             </Flex>
                         </DrawerDescription>
                     </DrawerHeader>
-                    <ActionForm />
+                    {renderActionForm()}
                 </Theme>
             </DrawerContent>
         </Drawer>

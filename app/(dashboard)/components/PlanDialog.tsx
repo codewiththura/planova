@@ -91,7 +91,7 @@ export function PlanDialog({ open, onOpenChange, plan, onSave }: PlanDialogProps
         setEndDateOpen(false);
     };
 
-    const PlanForm = () => (
+    const renderPlanForm = () => (
         <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4", !isDesktop && "px-4")}>
             <div className="grid gap-4 py-1 mb-4">
                 <div className="grid gap-2">
@@ -241,7 +241,7 @@ export function PlanDialog({ open, onOpenChange, plan, onSave }: PlanDialogProps
                                 </Text>
                             </DialogDescription>
                         </DialogHeader>
-                        <PlanForm />
+                        {renderPlanForm()}
                     </Theme>
                 </DialogContent>
             </Dialog>
@@ -274,7 +274,7 @@ export function PlanDialog({ open, onOpenChange, plan, onSave }: PlanDialogProps
                             </Text>
                         </DrawerDescription>
                     </DrawerHeader>
-                    <PlanForm />
+                    {renderPlanForm()}
                 </Theme>
             </DrawerContent>
         </Drawer>

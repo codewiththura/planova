@@ -183,7 +183,7 @@ export default function HistoryPage() {
                                     <>
                                         <div className='relative z-10 flex-shrink-0 bg-background pt-0.5 pb-1 hidden sm:block mt-1'>
                                             <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }}>
-                                                Completed actions will automatically appear here.                                            </Text>
+                                                As you complete actions, your timeline will appear here.                                          </Text>
                                         </div>
                                         <div className="flex flex-col items-center justify-center py-4 px-4 border sm:hidden rounded-2xl border-dashed bg-muted/10">
                                             <div className="w-full max-w-[200px] mb-4 flex items-center justify-center">
