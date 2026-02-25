@@ -7,6 +7,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 export const metadata: Metadata = {
   title: "Planova",
   description: 'A productivity app to manage your plans and actions.',
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
