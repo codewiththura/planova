@@ -13,7 +13,7 @@ import { calculateProgress } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
 import { SearchBar } from '@/app/components/SearchBar';
-import { initialPlans, initialActions } from './lib/data';
+import { useAppData } from '@/app/hooks/useAppData';
 
 type SortField = 'start_date' | 'progress' | 'task_count';
 
@@ -24,8 +24,20 @@ const sortOptions: Record<SortField, { label: string, asc: string, desc: string,
 };
 
 export default function Dashboard() {
-  const [plans, setPlans] = useState<Plan[]>(initialPlans);
-  const [actions, setActions] = useState<Action[]>(initialActions);
+  const {
+    plans,
+    actions,
+    loading,
+    handleCreatePlan,
+    handleEditPlan,
+    handleDeletePlan,
+    handleCreateAction,
+    handleEditAction,
+    handleUpdateActionStatus,
+    handleUpdatePlanStatus,
+    handleDeleteAction
+  } = useAppData();
+
   const [showCreatePlan, setShowCreatePlan] = useState(false);
   const [mobileFilter, setMobileFilter] = useState<'coming_up' | 'ongoing' | 'overdue'>('ongoing');
   const [sortField, setSortField] = useState<SortField>('start_date');
@@ -41,52 +53,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleCreatePlan = (newPlan: { title: string; description: string; startDate: string; endDate: string }) => {
-    const plan: Plan = {
-      id: Math.random().toString(36).substr(2, 9),
-      ...newPlan,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-    };
-    setPlans([...plans, plan]);
-  };
 
-  const handleEditPlan = (planId: string, updates: { title: string; description: string; startDate: string; endDate: string; }) => {
-    setPlans(plans.map(p => p.id === planId ? { ...p, ...updates } : p));
-  };
-
-  const handleDeletePlan = (planId: string) => {
-    setPlans(plans.filter(p => p.id !== planId));
-    setActions(actions.filter(a => a.planId !== planId));
-  };
-
-  const handleDeleteAction = (actionId: string) => {
-    setActions(actions.filter(a => a.id !== actionId));
-  };
-
-  const handleCreateAction = (planId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => {
-    const action: Action = {
-      id: Math.random().toString(36).substr(2, 9),
-      planId,
-      title,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      ...options,
-    };
-    setActions([...actions, action]);
-  };
-
-  const handleEditAction = (actionId: string, title: string, options?: { dateMode?: 'none' | 'date_range' | 'specific_date', startDate?: string, endDate?: string, startTime?: string, endTime?: string }) => {
-    setActions(actions.map(a => a.id === actionId ? { ...a, title, ...options } : a));
-  };
-
-  const handleUpdateActionStatus = (actionId: string, status: ActionStatus) => {
-    setActions(actions.map(a => a.id === actionId ? { ...a, status } : a));
-  };
-
-  const handleUpdatePlanStatus = (planId: string, status: PlanStatus) => {
-    setPlans(plans.map(p => p.id === planId ? { ...p, status, ...(status === 'completed' ? { completedAt: new Date().toISOString() } : status === 'closed' ? { closedAt: new Date().toISOString() } : {}) } : p));
-  };
 
   const activePlans = plans.filter(p => {
     if (p.status !== 'active') return false;
@@ -180,7 +147,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {activePlans.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-16">
+          <Text size="3" color="gray">Loading...</Text>
+        </div>
+      ) : activePlans.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4 border rounded-2xl border-dashed bg-muted/10">
           <div className="bg-muted rounded-full p-4 mb-4 shadow-sm">
             <PlusIcon className="h-8 w-8 text-muted-foreground" />

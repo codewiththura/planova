@@ -4,6 +4,7 @@ export type PlanStatus = 'active' | 'completed' | 'closed';
 
 export interface Action {
   id: string;
+  userId: string;
   planId: string;
   title: string;
   status: ActionStatus;
@@ -18,6 +19,7 @@ export interface Action {
 
 export interface Plan {
   id: string;
+  userId: string;
   title: string;
   description?: string;
   startDate: string;

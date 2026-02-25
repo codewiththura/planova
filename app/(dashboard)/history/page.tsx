@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { Plan } from '@/app/types';
 import { Button } from '@/app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/app/components/ui/dropdown-menu';
 import { CheckCircledIcon, ChevronDownIcon } from '@radix-ui/react-icons';
@@ -11,7 +10,7 @@ import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
 import { SearchBar } from '@/app/components/SearchBar';
 import { CompletedPlanCard } from './components/CompletedPlanCard';
 import { CompletedActionItem } from './components/CompletedActionItem';
-import { initialCompletedPlans, initialCompletedActions } from './lib/data';
+import { useAppData } from '@/app/hooks/useAppData';
 
 type SortField = 'completedAt' | 'startDate';
 
@@ -21,7 +20,8 @@ const sortOptions: Record<SortField, { label: string, asc: string, desc: string,
 };
 
 export default function HistoryPage() {
-    const [plans] = useState<Plan[]>(initialCompletedPlans);
+    const { plans: allPlans, actions: allActions, loading } = useAppData();
+
     const [sortField, setSortField] = useState<SortField>('completedAt');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [visibleCount, setVisibleCount] = useState(3);
@@ -38,7 +38,8 @@ export default function HistoryPage() {
         }
     };
 
-    const filteredPlans = plans.filter(p => {
+    const completedPlans = allPlans.filter(p => p.status === 'completed' || p.status === 'closed');
+    const filteredPlans = completedPlans.filter(p => {
         if (!searchQuery.trim()) return true;
         const query = searchQuery.toLowerCase();
         return p.title.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
@@ -47,7 +48,9 @@ export default function HistoryPage() {
     const sortedPlans = [...filteredPlans].sort((a, b) => {
         let comparison = 0;
         if (sortField === 'completedAt') {
-            comparison = new Date(a.completedAt || a.closedAt || a.endDate).getTime() - new Date(b.completedAt || b.closedAt || b.endDate).getTime();
+            const dateA = a.completedAt || a.closedAt || a.endDate;
+            const dateB = b.completedAt || b.closedAt || b.endDate;
+            comparison = new Date(dateA).getTime() - new Date(dateB).getTime();
         } else if (sortField === 'startDate') {
             comparison = new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
         }
@@ -57,7 +60,17 @@ export default function HistoryPage() {
     const visiblePlans = sortedPlans.slice(0, visibleCount);
     const hasMore = visibleCount < sortedPlans.length;
 
-    const filteredActions = initialCompletedActions.filter(a => {
+    const completedActionsWithPlan = allActions
+        .filter(a => a.status === 'done' || a.status === 'cancel')
+        .map(a => {
+            const plan = allPlans.find(p => p.id === a.planId);
+            return {
+                ...a,
+                planName: plan?.title || 'Unknown Plan'
+            };
+        });
+
+    const filteredActions = completedActionsWithPlan.filter(a => {
         if (!searchQuery.trim()) return true;
         const query = searchQuery.toLowerCase();
         return a.title.toLowerCase().includes(query) || a.planName.toLowerCase().includes(query);
@@ -103,73 +116,79 @@ export default function HistoryPage() {
                 </div>
             </div>
 
-            <div className="max-w-[1600px] container mx-auto pb-12 flex flex-col sm:grid sm:grid-cols-2 sm:gap-14">
-                <section className={cn("sm:block", mobileFilter === 'plans' ? 'block' : 'hidden')}>
-                    <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider">
-                        PLANS
-                    </Text>
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                    <Text size="3" color="gray">Loading history...</Text>
+                </div>
+            ) : (
+                <div className="max-w-[1600px] container mx-auto pb-12 flex flex-col sm:grid sm:grid-cols-2 sm:gap-14">
+                    <section className={cn("sm:block", mobileFilter === 'plans' ? 'block' : 'hidden')}>
+                        <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider">
+                            PLANS
+                        </Text>
 
-                    <div className="grid gap-2 mt-5">
-                        {visiblePlans.map((plan) => (
-                            <CompletedPlanCard key={plan.id} plan={plan} />
-                        ))}
+                        <div className="grid gap-2 mt-5">
+                            {visiblePlans.map((plan) => (
+                                <CompletedPlanCard key={plan.id} plan={plan} />
+                            ))}
 
-                        {visiblePlans.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-16 px-4 border rounded-2xl border-dashed bg-muted/10">
-                                <div className="bg-muted rounded-full p-4 mb-4 shadow-sm">
-                                    <CheckCircledIcon className="h-8 w-8 text-muted-foreground" />
+                            {visiblePlans.length === 0 && (
+                                <div className="flex flex-col items-center justify-center py-16 px-4 border rounded-2xl border-dashed bg-muted/10">
+                                    <div className="bg-muted rounded-full p-4 mb-4 shadow-sm">
+                                        <CheckCircledIcon className="h-8 w-8 text-muted-foreground" />
+                                    </div>
+                                    <Heading size="5" mb="2">No Completed Plans</Heading>
+                                    <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }}>
+                                        When you mark a plan as done on your dashboard, it will appear here.
+                                    </Text>
                                 </div>
-                                <Heading size="5" mb="2">No Completed Plans</Heading>
-                                <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }}>
-                                    When you mark a plan as done on your dashboard, it will appear here.
-                                </Text>
+                            )}
+                        </div>
+
+                        {hasMore && (
+                            <div className="flex justify-center pt-6">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setVisibleCount(prev => prev + 5)}
+                                    className="hover:bg-primary/10 rounded-full px-6 gap-2"
+                                >
+                                    <Text size="2" weight="medium" color="violet">Show more</Text>
+                                    <ChevronDownIcon className="h-4 w-4 text-[var(--violet-9)]" />
+                                </Button>
                             </div>
                         )}
-                    </div>
+                    </section>
 
-                    {hasMore && (
-                        <div className="flex justify-center pt-6">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setVisibleCount(prev => prev + 5)}
-                                className="hover:bg-primary/10 rounded-full px-6 gap-2"
-                            >
-                                <Text size="2" weight="medium" color="violet">Show more</Text>
-                                <ChevronDownIcon className="h-4 w-4 text-[var(--violet-9)]" />
-                            </Button>
+                    <section className={cn("pb-8 sm:block", mobileFilter === 'actions' ? 'block' : 'hidden')}>
+                        <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider mb-5">
+                            ACTIONS
+                        </Text>
+
+                        <div className="relative pl-1 sm:pl-3 mt-5">
+                            <div className="absolute left-[15px] sm:left-[23px] top-6 bottom-4 w-px bg-border/60 dark:bg-border/40 z-0 hidden sm:block" />
+
+                            <div className="space-y-6">
+                                {visibleActions.map((action, index) => (
+                                    <CompletedActionItem key={action.id} action={action} isLast={index === visibleActions.length - 1} />
+                                ))}
+                            </div>
                         </div>
-                    )}
-                </section>
 
-                <section className={cn("pb-8 sm:block", mobileFilter === 'actions' ? 'block' : 'hidden')}>
-                    <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider mb-5">
-                        ACTIONS
-                    </Text>
-
-                    <div className="relative pl-1 sm:pl-3 mt-5">
-                        <div className="absolute left-[15px] sm:left-[23px] top-6 bottom-4 w-px bg-border/60 dark:bg-border/40 z-0 hidden sm:block" />
-
-                        <div className="space-y-6">
-                            {visibleActions.map((action, index) => (
-                                <CompletedActionItem key={action.id} action={action} isLast={index === visibleActions.length - 1} />
-                            ))}
-                        </div>
-                    </div>
-
-                    {hasMoreActions && (
-                        <div className="flex justify-center pt-6">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setVisibleActionCount(prev => prev + 5)}
-                                className="hover:bg-primary/10 rounded-full px-6 gap-2"
-                            >
-                                <Text size="2" weight="medium" color="violet">Show more</Text>
-                                <ChevronDownIcon className="h-4 w-4 text-[var(--violet-9)]" />
-                            </Button>
-                        </div>
-                    )}
-                </section>
-            </div>
+                        {hasMoreActions && (
+                            <div className="flex justify-center pt-6">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setVisibleActionCount(prev => prev + 5)}
+                                    className="hover:bg-primary/10 rounded-full px-6 gap-2"
+                                >
+                                    <Text size="2" weight="medium" color="violet">Show more</Text>
+                                    <ChevronDownIcon className="h-4 w-4 text-[var(--violet-9)]" />
+                                </Button>
+                            </div>
+                        )}
+                    </section>
+                </div>
+            )}
         </div>
     );
 }

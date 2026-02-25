@@ -6,7 +6,7 @@ interface ActionTemp {
     id: string;
     title: string;
     planName: string;
-    completedAt: string;
+    completedAt?: string;
 }
 
 interface CompletedActionItemProps {
