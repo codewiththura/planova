@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Plan, Action, ActionStatus, PlanStatus } from '@/app/types';
+import { Plan } from '@/app/types';
 import { Button } from '@/app/components/ui/button';
 import { PlanCard } from '@/app/(dashboard)/components/PlanCard';
 import { PlanColumn } from '@/app/(dashboard)/components/PlanColumn';
@@ -14,6 +14,7 @@ import { cn } from '@/app/lib/utils';
 import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
 import { SearchBar } from '@/app/components/SearchBar';
 import { useAppData } from '@/app/hooks/useAppData';
+import Image from 'next/image';
 
 type SortField = 'start_date' | 'progress' | 'task_count';
 
@@ -152,17 +153,28 @@ export default function Dashboard() {
           <Text size="3" color="gray">Loading...</Text>
         </div>
       ) : activePlans.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4 border rounded-2xl border-dashed bg-muted/10">
-          <div className="bg-muted rounded-full p-4 mb-4 shadow-sm">
-            <PlusIcon className="h-8 w-8 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center py-4 px-4 border rounded-2xl border-dashed bg-muted/10">
+          <div className="w-full max-w-[200px] mb-4 flex items-center justify-center">
+            <Image
+              src="/illustrations/innovations-rafki.svg"
+              alt="Innovation illustration showing gears and a lightbulb"
+              width={240}
+              height={240}
+              priority
+              className="w-full h-auto drop-shadow-sm"
+            />
           </div>
           <Heading size="5" mb="2">No Active Plans</Heading>
-          <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }} mb="6">
+          <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }} my="4">
             Create your first plan to start organizing your goals and tracking your progress.
           </Text>
-          <Button onClick={() => setShowCreatePlan(true)} className="rounded-full">
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Create Your First Plan
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowCreatePlan(true)}
+            className="h-8 hover:bg-primary/10 rounded-full px-3 pointer-events-auto"
+          >
+            <Text size="2" weight="medium" color="violet"><PlusIcon className="mr-1 h-4 w-4 inline-block" /> Create Your First Plan</Text>
           </Button>
         </div>
       ) : (
@@ -207,11 +219,21 @@ export default function Dashboard() {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden flex flex-col gap-4 h-full">
+          <div className="md:hidden flex flex-col gap-4 mt-6 h-full">
             {getMobilePlans().length === 0 ? (
-              <div className="flex flex-col items-center justify-center pb-16 border rounded-2xl border-dashed bg-muted/10">
-                <Text size="3" color="gray" align="center">No plans in this category.</Text>
-              </div>
+              <>
+                <div className="w-full flex items-center justify-center mt-6">
+                  <Image
+                    src="/illustrations/cat-astronaut-rafiki.svg"
+                    alt="No plans illustration"
+                    width={180}
+                    height={180}
+                    priority
+                    className="w-[240px] h-auto drop-shadow-sm"
+                  />
+                </div>
+                <Text size="2" color="gray" className="text-center italic">No plans</Text>
+              </>
             ) : (
               <div className="grid gap-4">
                 {getMobilePlans().map((plan) => (

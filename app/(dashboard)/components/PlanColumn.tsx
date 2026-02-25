@@ -1,6 +1,7 @@
 import { Heading, Text } from '@radix-ui/themes';
 import { Plan, Action, ActionStatus, PlanStatus } from '@/app/types';
 import { PlanCard } from '@/app/(dashboard)/components/PlanCard';
+import Image from 'next/image';
 
 interface PlanColumnProps {
     title: string;
@@ -42,7 +43,19 @@ export function PlanColumn({
                 </Text>
             </div>
             {plans.length === 0 ? (
-                <Text size="2" color="gray" className="py-6 text-center italic">No plans</Text>
+                <>
+                    <div className="w-full flex items-center justify-center mt-6">
+                        <Image
+                            src="/illustrations/cat-astronaut-rafiki.svg"
+                            alt="No plans illustration"
+                            width={180}
+                            height={180}
+                            priority
+                            className="w-[180px] h-auto drop-shadow-sm"
+                        />
+                    </div>
+                    <Text size="2" color="gray" className="text-center italic">No plans</Text>
+                </>
             ) : (
                 <div className="grid gap-4">
                     {plans.map((plan) => (

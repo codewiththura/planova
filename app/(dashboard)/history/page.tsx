@@ -11,6 +11,7 @@ import { SearchBar } from '@/app/components/SearchBar';
 import { CompletedPlanCard } from './components/CompletedPlanCard';
 import { CompletedActionItem } from './components/CompletedActionItem';
 import { useAppData } from '@/app/hooks/useAppData';
+import Image from 'next/image';
 
 type SortField = 'completedAt' | 'startDate';
 
@@ -133,11 +134,18 @@ export default function HistoryPage() {
                             ))}
 
                             {visiblePlans.length === 0 && (
-                                <div className="flex flex-col items-center justify-center py-16 px-4 border rounded-2xl border-dashed bg-muted/10">
-                                    <div className="bg-muted rounded-full p-4 mb-4 shadow-sm">
-                                        <CheckCircledIcon className="h-8 w-8 text-muted-foreground" />
+                                <div className="flex flex-col items-center justify-center py-4 px-4 border rounded-2xl border-dashed bg-muted/10">
+                                    <div className="w-full max-w-[200px] mb-4 flex items-center justify-center">
+                                        <Image
+                                            src="/illustrations/outer-space-cuate.svg"
+                                            alt="No completed plans illustration"
+                                            width={240}
+                                            height={240}
+                                            priority
+                                            className="w-full h-auto drop-shadow-sm"
+                                        />
                                     </div>
-                                    <Heading size="5" mb="2">No Completed Plans</Heading>
+                                    <Heading size="5" my="4">No Completed Plans</Heading>
                                     <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }}>
                                         When you mark a plan as done on your dashboard, it will appear here.
                                     </Text>
@@ -171,6 +179,30 @@ export default function HistoryPage() {
                                 {visibleActions.map((action, index) => (
                                     <CompletedActionItem key={action.id} action={action} isLast={index === visibleActions.length - 1} />
                                 ))}
+                                {visibleActions.length === 0 && (
+                                    <>
+                                        <div className='relative z-10 flex-shrink-0 bg-background pt-0.5 pb-1 hidden sm:block mt-1'>
+                                            <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }}>
+                                                Completed actions will automatically appear here.                                            </Text>
+                                        </div>
+                                        <div className="flex flex-col items-center justify-center py-4 px-4 border sm:hidden rounded-2xl border-dashed bg-muted/10">
+                                            <div className="w-full max-w-[200px] mb-4 flex items-center justify-center">
+                                                <Image
+                                                    src="/illustrations/outer-space-cuate.svg"
+                                                    alt="No completed plans illustration"
+                                                    width={240}
+                                                    height={240}
+                                                    priority
+                                                    className="w-full h-auto drop-shadow-sm"
+                                                />
+                                            </div>
+                                            <Heading size="5" my="4">No Completed Actions</Heading>
+                                            <Text size="2" color="gray" align="center" style={{ maxWidth: '28rem' }}>
+                                                When you mark an action as done on your dashboard, it will appear here.
+                                            </Text>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
