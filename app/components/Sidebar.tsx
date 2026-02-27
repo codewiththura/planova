@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DashboardIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
+import { DashboardIcon, CounterClockwiseClockIcon, PersonIcon } from '@radix-ui/react-icons';
 import { Heading, Text } from '@radix-ui/themes';
 import { cn } from '@/app/lib/utils';
 
@@ -12,8 +12,7 @@ import { auth } from '../lib/firebase';
 import Image from 'next/image';
 const navItems = [
     { name: 'Dashboard', href: '/', icon: DashboardIcon },
-    { name: 'History', href: '/history', icon: CounterClockwiseClockIcon },
-];
+    { name: 'History', href: '/history', icon: CounterClockwiseClockIcon },];
 
 interface SidebarProps {
     isCollapsed: boolean;
@@ -102,10 +101,10 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                 </nav>
             </div>
 
-            {/* 4. Update the User Profile Section */}
+            {/* User Profile Section — links to /profile */}
             <div className="mt-auto border-t p-4">
-                <div className={cn(
-                    "flex items-center transition-all duration-300 ease-in-out",
+                <Link href="/profile" className={cn(
+                    "flex items-center transition-all duration-300 ease-in-out rounded-lg py-1 hover:bg-muted/50",
                     isCollapsed ? "justify-center" : "gap-3 px-2"
                 )}>
                     {/* Profile Picture or Initials */}
@@ -133,7 +132,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                             {user?.email || "No email provided"}
                         </Text>
                     </div>
-                </div>
+                </Link>
             </div>
         </aside>
     );

@@ -22,6 +22,7 @@ export function TopNavbar() {
         switch (pathname) {
             case '/': return 'Dashboard';
             case '/history': return 'History';
+            case '/profile': return 'Profile';
             default: return 'Planova';
         }
     };

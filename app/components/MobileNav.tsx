@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DashboardIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
+import { DashboardIcon, CounterClockwiseClockIcon, PersonIcon } from '@radix-ui/react-icons';
 import { cn } from '@/app/lib/utils';
 import { Text } from '@radix-ui/themes';
 
 const navItems = [
     { name: 'Dashboard', href: '/', icon: DashboardIcon },
     { name: 'History', href: '/history', icon: CounterClockwiseClockIcon },
+    { name: 'Profile', href: '/profile', icon: PersonIcon },
 ];
 
 export function MobileNav() {
