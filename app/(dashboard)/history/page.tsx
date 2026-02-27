@@ -21,7 +21,7 @@ const sortOptions: Record<SortField, { label: string, asc: string, desc: string,
 };
 
 export default function HistoryPage() {
-    const { plans: allPlans, actions: allActions, loading } = useAppData();
+    const { plans: allPlans, actions: allActions, loading, handleUpdatePlanStatus } = useAppData();
 
     const [sortField, setSortField] = useState<SortField>('completedAt');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -130,7 +130,7 @@ export default function HistoryPage() {
 
                         <div className="grid gap-2 sm:mt-4">
                             {visiblePlans.map((plan) => (
-                                <CompletedPlanCard key={plan.id} plan={plan} />
+                                <CompletedPlanCard key={plan.id} plan={plan} onReactivate={(planId) => handleUpdatePlanStatus(planId, 'active')} />
                             ))}
 
                             {visiblePlans.length === 0 && (
