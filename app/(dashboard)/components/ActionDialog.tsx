@@ -234,7 +234,7 @@ function ActionForm({ action, isDesktop, planStartDate, planEndDate, onCancel, o
     };
 
     return (
-        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4 py-1", !isDesktop && "px-4 ")}>
+        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4", !isDesktop && "px-4 ")}>
             <div className="grid gap-2">
                 <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast htmlFor="action-title">
                     Action Title <Text color="red">*</Text>
@@ -249,13 +249,12 @@ function ActionForm({ action, isDesktop, planStartDate, planEndDate, onCancel, o
                     }}
                     placeholder="e.g., Complete market research"
                     required
-                    autoFocus
                     radius='medium'
                     className={cn(!isDesktop && "text-[16px] h-12")}
                 />
             </div>
 
-            <div className={cn("grid gap-4 mt-2", isDesktop ? "grid-cols-2" : "grid-cols-1")}>
+            <div className="grid gap-4 mt-2 grid-cols-2">
                 <DatePickerField
                     label="From"
                     date={startDate}
@@ -294,7 +293,7 @@ function ActionForm({ action, isDesktop, planStartDate, planEndDate, onCancel, o
 
             {!showTimeFields ? (
                 <Button
-                    size={isDesktop ? "3" : "4"}
+                    size="3"
                     variant="soft"
                     radius={isDesktop ? "medium" : "large"}
                     color="gray"
@@ -309,7 +308,7 @@ function ActionForm({ action, isDesktop, planStartDate, planEndDate, onCancel, o
                     </Flex>
                 </Button>
             ) : (
-                <div className={cn("grid gap-4 mt-1", isDesktop ? "grid-cols-2" : "grid-cols-1")}>
+                <div className="grid gap-4 mt-1 grid-cols-2">
                     <TimePickerField
                         label="Start Time"
                         time={startTime}
@@ -440,7 +439,7 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="px-2 rounded-t-3xl">
+            <DrawerContent className="px-2 py-4 rounded-t-3xl">
                 {FormContent}
             </DrawerContent>
         </Drawer>

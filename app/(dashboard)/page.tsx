@@ -217,7 +217,7 @@ export default function Dashboard() {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden flex flex-col gap-4 mt-6 h-full">
+          <div className="md:hidden flex flex-col gap-4 h-full">
             {getMobilePlans().length === 0 ? (
               <>
                 <div className="w-full flex items-center justify-center mt-6">

@@ -128,7 +128,7 @@ export default function HistoryPage() {
                             PLANS
                         </Text>
 
-                        <div className="grid gap-2 mt-5">
+                        <div className="grid gap-2 sm:mt-4">
                             {visiblePlans.map((plan) => (
                                 <CompletedPlanCard key={plan.id} plan={plan} />
                             ))}
@@ -172,7 +172,7 @@ export default function HistoryPage() {
                             ACTIONS
                         </Text>
 
-                        <div className="relative pl-1 sm:pl-3 mt-5">
+                        <div className="relative sm:pl-3 sm:mt-4">
                             <div className="absolute left-[15px] sm:left-[23px] top-6 bottom-4 w-px bg-border/60 dark:bg-border/40 z-0 hidden sm:block" />
 
                             <div className="space-y-6">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/app/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerFooter } from '@/app/components/ui/drawer';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { CalendarIcon } from '@radix-ui/react-icons';
@@ -99,7 +99,7 @@ function PlanForm({ plan, isDesktop, onCancel, onSubmit }: PlanFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4", !isDesktop && "px-4")}>
-            <div className="grid gap-4 py-1 mb-4">
+            <div className="grid gap-4 py-1 mb-2">
                 <div className="grid gap-2">
                     <Text as="label" size="2" weight="medium" highContrast htmlFor="title">
                         Plan Title <Text color="red">*</Text>
@@ -149,16 +149,30 @@ function PlanForm({ plan, isDesktop, onCancel, onSubmit }: PlanFormProps) {
                 </div>
             </div>
 
-            <DialogFooter className="pt-2">
-                {isDesktop && (
+            {isDesktop ? (
+                <DialogFooter className="pt-4 mt-2 border-t border-border/50">
                     <Button size="3" variant="soft" radius='medium' color="gray" type="button" onClick={onCancel}>
                         Cancel
                     </Button>
-                )}
-                <Button size="3" variant="solid" radius='medium' color="violet" type="submit" disabled={isSubmitDisabled}>
-                    {plan ? 'Save Changes' : 'Create Plan'}
-                </Button>
-            </DialogFooter>
+                    <Button size="3" variant="solid" radius='medium' color="violet" type="submit" disabled={isSubmitDisabled}>
+                        {plan ? 'Save Changes' : 'Create Plan'}
+                    </Button>
+                </DialogFooter>
+            ) : (
+                <DrawerFooter className="px-0 border-t border-border/50">
+                    <Button
+                        size="4"
+                        variant="solid"
+                        radius='large'
+                        color="violet"
+                        type="submit"
+                        disabled={isSubmitDisabled}
+                        style={{ width: '100%' }}
+                    >
+                        {plan ? 'Save Changes' : 'Create Plan'}
+                    </Button>
+                </DrawerFooter>
+            )}
         </form>
     );
 }
@@ -191,7 +205,6 @@ export function PlanDialog({ open, onOpenChange, plan, onSave }: PlanDialogProps
         ? 'Update the details, timeframe, or goals for this plan.'
         : 'Set a goal with a specific timeframe and break it down into actionable steps.';
 
-    // Shared internal content to prevent duplicating the Theme and Form
     const FormContent = (
         <Theme appearance="inherit" accentColor="violet" scaling={isDesktop ? "90%" : "100%"} radius="large" hasBackground={false} style={{ display: 'contents' }}>
             <style>
@@ -202,20 +215,18 @@ export function PlanDialog({ open, onOpenChange, plan, onSave }: PlanDialogProps
                 `}
             </style>
 
-            {/* Conditional Header based on container */}
             {isDesktop ? (
                 <DialogHeader className="space-y-1.5 pb-1">
                     <DialogTitle asChild><Heading size="4" weight="medium" highContrast>{headerText}</Heading></DialogTitle>
                     <DialogDescription asChild><Text size="2" color="gray" as="p">{descriptionText}</Text></DialogDescription>
                 </DialogHeader>
             ) : (
-                <DrawerHeader className="text-left px-4 pt-6 pb-6">
+                <DrawerHeader className="text-left px-4">
                     <DrawerTitle asChild><Heading size="6" weight="medium" highContrast>{headerText}</Heading></DrawerTitle>
                     <DrawerDescription asChild><Text size="3" color="gray" mt="1" as="p">{descriptionText}</Text></DrawerDescription>
                 </DrawerHeader>
             )}
 
-            {/* Render the Form only if the dialog is open to ensure fresh state reset */}
             {open && (
                 <PlanForm
                     plan={plan}

@@ -1,9 +1,8 @@
 import { Text } from '@radix-ui/themes';
-
 import { Action, ActionStatus } from '@/app/types';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Button } from '@/app/components/ui/button';
-import { Cross2Icon, ReloadIcon, CalendarIcon, ClockIcon, Pencil1Icon } from '@radix-ui/react-icons';
+import { Cross2Icon, ReloadIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import { formatDate, formatTime } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
 
@@ -14,120 +13,119 @@ interface ActionItemProps {
   onDeleteAction?: (action: Action) => void;
 }
 
+const formatTimeRange = (start?: string, end?: string) => {
+  if (!start && !end) return null;
+
+  return [start, end]
+    .filter(Boolean)
+    .map((time) => formatTime(time as string))
+    .join(' - ');
+};
+
+const ActionDate = ({ action }: { action: Action }) => {
+  if (!action.dateMode || action.dateMode === 'none') return null;
+
+  if (action.dateMode === 'date_range' && action.startDate && action.endDate) {
+    return (
+      <Text size="1" color="gray" className="block mt-0.5">
+        {formatDate(action.startDate)} - {formatDate(action.endDate)}
+      </Text>
+    );
+  }
+
+  if (action.dateMode === 'specific_date' && action.startDate) {
+    const timeStr = formatTimeRange(action.startTime, action.endTime);
+
+    return (
+      <Text size="1" color="gray" className="flex items-center gap-1 mt-0.5">
+        {formatDate(action.startDate)}
+        {timeStr && (
+          <>
+            <span className="mx-1">•</span>
+            <span className="text-xs">{timeStr}</span>
+          </>
+        )}
+      </Text>
+    );
+  }
+
+  return null;
+};
+
 export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteAction }: ActionItemProps) {
-  const handleCheckboxChange = (checked: boolean) => {
-    if (action.status === 'pending') {
-      onUpdateStatus(action.id, 'done');
-    } else if (action.status === 'done') {
-      onUpdateStatus(action.id, 'pending');
-    }
-  };
+  const isCanceled = action.status === 'cancel';
+  const isDone = action.status === 'done';
+  const isPending = action.status === 'pending';
+  const isInactive = isCanceled || isDone;
 
-  const handleDelete = () => {
-    if (onDeleteAction) onDeleteAction(action);
-  };
-
-  const handleRestore = () => {
-    onUpdateStatus(action.id, 'pending');
-  };
-
-  const handleEdit = () => {
-    if (onEditAction) {
-      onEditAction(action);
-    }
-  };
-
-  const renderActionDate = () => {
-    if (!action.dateMode || action.dateMode === 'none') return null;
-
-    if (action.dateMode === 'date_range' && action.startDate && action.endDate) {
-      return (
-        <Text size="1" color="gray" className="flex items-center gap-1 mt-0.5">
-          {/* <CalendarIcon className="w-3 h-3" /> */}
-          {formatDate(action.startDate)} - {formatDate(action.endDate)}
-        </Text>
-      );
-    }
-
-    if (action.dateMode === 'specific_date' && action.startDate) {
-      const timeStr = (action.startTime && action.endTime)
-        ? `${formatTime(action.startTime)} - ${formatTime(action.endTime)}`
-        : action.startTime ? formatTime(action.startTime) : (action.endTime ? formatTime(action.endTime) : '');
-
-      return (
-        <Text size="1" color="gray" className="flex items-center gap-1 mt-0.5">
-          {/* <CalendarIcon className="w-3 h-3" /> */}
-          {formatDate(action.startDate)}
-          {timeStr && (
-            <>
-              {/* <ClockIcon className="w-3 h-3 ml-1" /> */}
-              <span className='mx-1'>•</span>
-              <span className="text-xs">{timeStr}</span>
-            </>
-          )}
-        </Text>
-      );
-    }
-
-    return null;
+  const handleToggleStatus = () => {
+    if (isPending) onUpdateStatus(action.id, 'done');
+    else if (isDone) onUpdateStatus(action.id, 'pending');
   };
 
   return (
-    <div className={cn(
-      "flex items-center gap-3 py-2 px-3 rounded-md group transition-colors",
-      action.status === 'cancel' && "opacity-50"
-    )}>
+    <div
+      className={cn(
+        "flex items-center gap-2 py-2 px-1 rounded-md group transition-colors",
+        isCanceled && "opacity-50"
+      )}
+    >
       <Checkbox
-        checked={action.status === 'done'}
-        onCheckedChange={handleCheckboxChange}
-        disabled={action.status === 'cancel'}
-        className={cn(action.status === 'cancel' && "cursor-not-allowed")}
+        checked={isDone}
+        onCheckedChange={handleToggleStatus}
+        disabled={isCanceled}
+        className={cn(isCanceled && "cursor-not-allowed")}
       />
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 ml-1">
         <Text
           size="2"
-          color={action.status === 'done' || action.status === 'cancel' ? 'gray' : undefined}
-          highContrast={action.status !== 'done' && action.status !== 'cancel'}
+          color={isInactive ? 'gray' : undefined}
+          highContrast={!isInactive}
           className={cn(
             "transition-all block truncate",
-            (action.status === 'done' || action.status === 'cancel') && "line-through"
+            isInactive && "line-through"
           )}
         >
           {action.title}
         </Text>
-        {renderActionDate()}
+        <ActionDate action={action} />
       </div>
 
-      {action.status === 'cancel' ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-          onClick={handleRestore}
-        >
-          <ReloadIcon className="h-3.5 w-3.5" />
-        </Button>
-      ) : (
-        <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+        {isCanceled ? (
           <Button
             variant="ghost"
             size="icon"
             className="h-7 w-7"
-            onClick={handleEdit}
+            onClick={() => onUpdateStatus(action.id, 'pending')}
+            aria-label="Restore Action"
           >
-            <Pencil1Icon className="h-3.5 w-3.5" />
+            <ReloadIcon className="h-3.5 w-3.5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={handleDelete}
-          >
-            <Cross2Icon className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      )}
+        ) : (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onEditAction?.(action)}
+              aria-label="Edit Action"
+            >
+              <Pencil1Icon className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onDeleteAction?.(action)}
+              aria-label="Delete Action"
+            >
+              <Cross2Icon className="h-3.5 w-3.5" />
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
