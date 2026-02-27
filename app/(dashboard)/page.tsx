@@ -7,7 +7,7 @@ import { PlanCard } from '@/app/(dashboard)/components/PlanCard';
 import { PlanColumn } from '@/app/(dashboard)/components/PlanColumn';
 import { PlanDialog } from '@/app/(dashboard)/components/PlanDialog';
 import { PlusIcon, ChevronDownIcon } from '@radix-ui/react-icons';
-import { Heading, Text } from '@radix-ui/themes';
+import { Heading, Spinner, Text } from '@radix-ui/themes';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/app/components/ui/dropdown-menu';
 import { calculateProgress } from '@/app/utils/helpers';
 import { cn } from '@/app/lib/utils';
@@ -53,8 +53,6 @@ export default function Dashboard() {
       setSortDirection('asc');
     }
   };
-
-
 
   const activePlans = plans.filter(p => {
     if (p.status !== 'active') return false;
@@ -109,7 +107,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mx-auto px-6 max-w-[1600px]">
+    <div className="container mx-auto px-4 sm:px-6 max-w-[1600px]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 md:mb-6">
         <SearchBar
           placeholder="Search plans..."

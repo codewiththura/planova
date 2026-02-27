@@ -7,6 +7,7 @@ import { Heading, Text } from '@radix-ui/themes';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function TopNavbar() {
     const pathname = usePathname();
@@ -29,8 +30,15 @@ export function TopNavbar() {
         <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-background/80 backdrop-blur-md px-6 shadow-none dark:border-border/60">
             <div className="flex items-center gap-5">
                 <Link href="/" className="md:hidden flex items-center gap-2">
-                    <div className="bg-primary text-primary-foreground rounded-lg p-1.5 inline-flex">
-                        <TargetIcon className="h-5 w-5" />
+                    <div className="shrink-0 flex items-center justify-center">
+                        <Image
+                            src="/icons/icon-512x512.png"
+                            alt="Logo"
+                            width={40}
+                            height={40}
+                            unoptimized
+                            className='border rounded-lg border-primary'
+                        />
                     </div>
                 </Link>
 

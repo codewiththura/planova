@@ -33,7 +33,7 @@ export default function SignUpPage() {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
             const token = await userCredential.user.getIdToken()
-            document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Strict`
+            document.cookie = `session=${token}; path=/; max-age=604800; SameSite=Lax`
             router.push('/')
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
@@ -64,7 +64,7 @@ export default function SignUpPage() {
             const provider = new GoogleAuthProvider()
             const userCredential = await signInWithPopup(auth, provider)
             const token = await userCredential.user.getIdToken()
-            document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Strict`
+            document.cookie = `session=${token}; path=/; max-age=604800; SameSite=Lax`
             router.push('/')
         } catch (error: any) {
             if (error.code === 'auth/account-exists-with-different-credential') {

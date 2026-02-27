@@ -15,6 +15,9 @@ export function useAppData() {
             return;
         }
 
+        // On iOS PWA, Firebase auth persistence (IndexedDB/localStorage) may take
+        // a moment to restore the previous session. onAuthStateChanged fires once
+        // auth is ready — either with a user (restored session) or null (no session).
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
             if (user) {
                 let plansResolved = false;
@@ -31,11 +34,19 @@ export function useAppData() {
                     setPlans(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Plan)));
                     plansResolved = true;
                     maybeFinishLoading();
+                }, (error) => {
+                    console.error('[useAppData] Plans snapshot error:', error);
+                    plansResolved = true;
+                    maybeFinishLoading();
                 });
 
                 const actionsQuery = query(collection(db, 'actions'), where('userId', '==', user.uid));
                 const unsubscribeActions = onSnapshot(actionsQuery, (snapshot) => {
                     setActions(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Action)));
+                    actionsResolved = true;
+                    maybeFinishLoading();
+                }, (error) => {
+                    console.error('[useAppData] Actions snapshot error:', error);
                     actionsResolved = true;
                     maybeFinishLoading();
                 });
@@ -45,6 +56,8 @@ export function useAppData() {
                     unsubscribeActions();
                 };
             } else {
+                // No authenticated user — clear data and stop loading.
+                // The middleware will redirect to /login for protected routes.
                 setPlans([]);
                 setActions([]);
                 setLoading(false);
@@ -67,7 +80,7 @@ export function useAppData() {
         );
 
     const handleCreatePlan = async (newPlan: Omit<Plan, 'id' | 'userId' | 'status' | 'createdAt'>) => {
-        const user = auth.currentUser;
+        const user = auth?.currentUser;
         if (!user) return;
         const newRef = doc(collection(db, 'plans'));
         const plan: Plan = {
@@ -91,7 +104,7 @@ export function useAppData() {
     };
 
     const handleCreateAction = async (planId: string, title: string, options?: Partial<Action>) => {
-        const user = auth.currentUser;
+        const user = auth?.currentUser;
         if (!user) return;
         const newRef = doc(collection(db, 'actions'));
         const action = stripUndefined({

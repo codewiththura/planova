@@ -34,7 +34,7 @@ export default function LoginPage() {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
             const token = await userCredential.user.getIdToken()
-            document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Strict`
+            document.cookie = `session=${token}; path=/; max-age=604800; SameSite=Lax`
             router.push('/')
         } catch (error: any) {
             if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -54,7 +54,7 @@ export default function LoginPage() {
             const provider = new GoogleAuthProvider()
             const userCredential = await signInWithPopup(auth, provider)
             const token = await userCredential.user.getIdToken()
-            document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Strict`
+            document.cookie = `session=${token}; path=/; max-age=604800; SameSite=Lax`
             router.push('/')
         } catch (error: any) {
             if (error.code === 'auth/account-exists-with-different-credential') {

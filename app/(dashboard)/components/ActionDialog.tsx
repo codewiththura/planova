@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/app/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/app/components/ui/drawer';
 import { Calendar } from '@/app/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
@@ -13,35 +13,9 @@ import { Heading, Text, TextField, Button, Flex, Theme, Badge } from '@radix-ui/
 import { Action } from '@/app/types';
 import { useMediaQuery } from '@/app/hooks/useMediaQuery';
 
-interface ActionDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    planTitle: string;
-    planStartDate?: string;
-    planEndDate?: string;
-    action?: Action | null;
-    onSave: (
-        title: string,
-        options?: {
-            dateMode?: 'none' | 'date_range' | 'specific_date';
-            startDate?: string;
-            endDate?: string;
-            startTime?: string;
-            endTime?: string;
-        },
-        actionId?: string
-    ) => void;
-}
-
 const formatTimeStr = formatTime;
 
-const TimePickerContent = ({
-    value,
-    onChange
-}: {
-    value: string,
-    onChange: (v: string) => void
-}) => {
+const TimePickerContent = ({ value, onChange }: { value: string, onChange: (v: string) => void }) => {
     const hours = Array.from({ length: 12 }, (_, i) => i === 0 ? 12 : i);
     const minutes = Array.from({ length: 60 }, (_, i) => i);
     const periods = ['AM', 'PM'];
@@ -132,52 +106,110 @@ const TimePickerContent = ({
     );
 };
 
-export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onSave }: ActionDialogProps) {
-    const isDesktop = useMediaQuery("(min-width: 768px)");
+function DatePickerField({ label, date, onSelect, isDesktop, disabledFunc, disabledButton = false, onClear }: any) {
+    const [isOpen, setIsOpen] = useState(false);
 
-    const [title, setTitle] = useState('');
-    const [startDate, setStartDate] = useState<Date | undefined>();
-    const [endDate, setEndDate] = useState<Date | undefined>();
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+    return (
+        <div className="grid gap-2">
+            <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast>{label}</Text>
+            <Popover open={isOpen} onOpenChange={setIsOpen} modal={true}>
+                <PopoverTrigger asChild>
+                    <button
+                        type="button"
+                        disabled={disabledButton}
+                        className={cn(
+                            "px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] outline-none transition-all",
+                            isDesktop ? "h-10 rounded-[8px]" : "h-12 rounded-[12px]",
+                            disabledButton && "opacity-50 cursor-not-allowed"
+                        )}
+                    >
+                        <Flex gap="2" align="center" style={{ width: '100%' }}>
+                            <CalendarIcon className="shrink-0 text-[var(--gray-a10)]" />
+                            <Text size={isDesktop ? "2" : "3"} color={date ? undefined : "gray"} highContrast={!!date} className="truncate">
+                                {date ? formatDate(date.toISOString()) : 'Select date'}
+                            </Text>
+                        </Flex>
+                    </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-2" align="start">
+                    <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
+                        <div className="theme-scale-90 flex justify-center">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={(d) => {
+                                    onSelect(d);
+                                    if (d && !onClear) setIsOpen(false); // Only auto-close if it's not the start date that affects end date logic
+                                }}
+                                disabled={disabledFunc}
+                                initialFocus
+                            />
+                        </div>
+                        {date && onClear && (
+                            <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { onClear(); setIsOpen(false); }}>
+                                Clear
+                            </Button>
+                        )}
+                    </Theme>
+                </PopoverContent>
+            </Popover>
+        </div>
+    );
+}
 
-    const [startDateOpen, setStartDateOpen] = useState(false);
-    const [endDateOpen, setEndDateOpen] = useState(false);
-    const [startTimeOpen, setStartTimeOpen] = useState(false);
-    const [endTimeOpen, setEndTimeOpen] = useState(false);
-    const [showTimeFields, setShowTimeFields] = useState(false);
+function TimePickerField({ label, time, onChange, isDesktop, onClear }: any) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="grid gap-2">
+            <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast>{label}</Text>
+            <Popover open={isOpen} onOpenChange={setIsOpen} modal={true}>
+                <PopoverTrigger asChild>
+                    <button
+                        type="button"
+                        className={cn(
+                            "px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] outline-none transition-all",
+                            isDesktop ? "h-10 rounded-[8px]" : "h-12 rounded-[12px]"
+                        )}
+                    >
+                        <Flex gap="2" align="center" style={{ width: '100%' }}>
+                            <ClockIcon className="shrink-0 text-[var(--gray-a10)]" />
+                            <Text size={isDesktop ? "2" : "3"} color={time ? undefined : "gray"} highContrast={!!time} className="truncate">
+                                {time ? formatTimeStr(time) : 'Select time'}
+                            </Text>
+                        </Flex>
+                    </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-2" align="start">
+                    <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
+                        <TimePickerContent value={time} onChange={onChange} />
+                        <div className="mt-3 flex flex-col gap-2">
+                            {time && (
+                                <>
+                                    <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { onClear(); setIsOpen(false); }}>
+                                        Clear
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </Theme>
+                </PopoverContent>
+            </Popover>
+        </div>
+    );
+}
+
+function ActionForm({ action, isDesktop, planStartDate, planEndDate, onCancel, onSubmit }: any) {
+    const [title, setTitle] = useState(action?.title || '');
+    const [startDate, setStartDate] = useState<Date | undefined>(action?.startDate ? new Date(action.startDate) : undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(action?.endDate ? new Date(action.endDate) : undefined);
+    const [startTime, setStartTime] = useState(action?.startTime || '');
+    const [endTime, setEndTime] = useState(action?.endTime || '');
+    const [showTimeFields, setShowTimeFields] = useState(!!(action?.startTime || action?.endTime));
     const [isError, setIsError] = useState(false);
-
-    React.useEffect(() => {
-        if (open) {
-            if (action) {
-                setTitle(action.title);
-                setStartDate(action.startDate ? new Date(action.startDate) : undefined);
-                setEndDate(action.endDate ? new Date(action.endDate) : undefined);
-                setStartTime(action.startTime || '');
-                setEndTime(action.endTime || '');
-                setShowTimeFields(!!(action.startTime || action.endTime));
-            } else {
-                setTitle('');
-                setStartDate(undefined);
-                setEndDate(undefined);
-                setStartTime('');
-                setEndTime('');
-                setShowTimeFields(false);
-            }
-            setIsError(false);
-            setStartDateOpen(false);
-            setEndDateOpen(false);
-            setStartTimeOpen(false);
-            setEndTimeOpen(false);
-        }
-    }, [open, action]);
-
-
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!title.trim() || (action && !action.id)) {
             setIsError(true);
             setTimeout(() => setIsError(false), 300);
@@ -185,13 +217,10 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
         }
 
         let computedDateMode: 'none' | 'date_range' | 'specific_date' = 'none';
-        if (startDate && endDate) {
-            computedDateMode = 'date_range';
-        } else if (startDate) {
-            computedDateMode = 'specific_date';
-        }
+        if (startDate && endDate) computedDateMode = 'date_range';
+        else if (startDate) computedDateMode = 'specific_date';
 
-        onSave(
+        onSubmit(
             title.trim(),
             {
                 dateMode: computedDateMode,
@@ -202,19 +231,10 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
             },
             action?.id
         );
-
-        if (!action) {
-            setTitle('');
-            setStartDate(undefined);
-            setEndDate(undefined);
-            setStartTime('');
-            setEndTime('');
-        }
-        onOpenChange(false);
     };
 
-    const renderActionForm = () => (
-        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4 py-1", !isDesktop && "px-4 mt-2")}>
+    return (
+        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4 py-1", !isDesktop && "px-4 ")}>
             <div className="grid gap-2">
                 <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast htmlFor="action-title">
                     Action Title <Text color="red">*</Text>
@@ -236,118 +256,42 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
             </div>
 
             <div className={cn("grid gap-4 mt-2", isDesktop ? "grid-cols-2" : "grid-cols-1")}>
-                {/* Start Date */}
-                <div className="grid gap-2">
-                    <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast>From</Text>
-                    <Popover open={startDateOpen} onOpenChange={setStartDateOpen} modal={true}>
-                        <PopoverTrigger asChild>
-                            <button
-                                type="button"
-                                className={cn(
-                                    "px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] outline-none transition-all",
-                                    isDesktop ? "h-10 rounded-[8px]" : "h-12 rounded-[12px]"
-                                )}
-                            >
-                                <Flex gap="2" align="center" style={{ width: '100%' }}>
-                                    <CalendarIcon className="shrink-0 text-[var(--gray-a10)]" />
-                                    <Text size={isDesktop ? "2" : "3"} color={startDate ? undefined : "gray"} highContrast={!!startDate} className="truncate">
-                                        {startDate ? formatDate(startDate.toISOString()) : 'Select date'}
-                                    </Text>
-                                </Flex>
-                            </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-2" align="start">
-                            <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
-                                <div className="theme-scale-90 flex justify-center">
-                                    <Calendar
-                                        mode="single"
-                                        selected={startDate}
-                                        onSelect={(date) => {
-                                            setStartDate(date);
-                                            if (date) {
-                                                setStartDateOpen(false);
-                                            } else {
-                                                setEndDate(undefined);
-                                            }
-                                        }}
-                                        disabled={(date) => {
-                                            if (!planStartDate || !planEndDate) return false;
-                                            const planStart = new Date(planStartDate); planStart.setHours(0, 0, 0, 0);
-                                            const planEnd = new Date(planEndDate); planEnd.setHours(23, 59, 59, 999);
-                                            return date < planStart || date > planEnd;
-                                        }}
-                                        initialFocus
-                                    />
-                                </div>
-                                {startDate && (
-                                    <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { setStartDate(undefined); setEndDate(undefined); setStartDateOpen(false); }}>
-                                        Clear
-                                    </Button>
-                                )}
-                            </Theme>
-                        </PopoverContent>
-                    </Popover>
-                </div>
-
-                {/* End Date */}
-                <div className="grid gap-2">
-                    <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast>To</Text>
-                    <Popover open={endDateOpen} onOpenChange={setEndDateOpen} modal={true}>
-                        <PopoverTrigger asChild>
-                            <button
-                                type="button"
-                                className={cn(
-                                    "px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] outline-none transition-all",
-                                    isDesktop ? "h-10 rounded-[8px]" : "h-12 rounded-[12px]",
-                                    !startDate && "opacity-50 cursor-not-allowed"
-                                )}
-                                disabled={!startDate}
-                            >
-                                <Flex gap="2" align="center" style={{ width: '100%' }}>
-                                    <CalendarIcon className="shrink-0 text-[var(--gray-a10)]" />
-                                    <Text size={isDesktop ? "2" : "3"} color={endDate ? undefined : "gray"} highContrast={!!endDate} className="truncate">
-                                        {endDate ? formatDate(endDate.toISOString()) : 'Select date'}
-                                    </Text>
-                                </Flex>
-                            </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-2" align="start">
-                            <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
-                                <div className="theme-scale-90 flex justify-center">
-                                    <Calendar
-                                        mode="single"
-                                        selected={endDate}
-                                        onSelect={(date) => {
-                                            setEndDate(date);
-                                            if (date) {
-                                                setStartTime('');
-                                                setEndTime('');
-                                                setShowTimeFields(false);
-                                                setEndDateOpen(false);
-                                            }
-                                        }}
-                                        disabled={(date) => {
-                                            let minDate = startDate ? new Date(startDate) : (planStartDate ? new Date(planStartDate) : null);
-                                            if (minDate) minDate.setHours(0, 0, 0, 0);
-                                            let maxDate = planEndDate ? new Date(planEndDate) : null;
-                                            if (maxDate) maxDate.setHours(23, 59, 59, 999);
-                                            return !!((minDate && date < minDate) || (maxDate && date > maxDate));
-                                        }}
-                                        initialFocus
-                                    />
-                                </div>
-                                {endDate && (
-                                    <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { setEndDate(undefined); setEndDateOpen(false); }}>
-                                        Clear
-                                    </Button>
-                                )}
-                            </Theme>
-                        </PopoverContent>
-                    </Popover>
-                </div>
+                <DatePickerField
+                    label="From"
+                    date={startDate}
+                    isDesktop={isDesktop}
+                    onSelect={(d: Date | undefined) => {
+                        setStartDate(d);
+                        if (!d) setEndDate(undefined);
+                    }}
+                    onClear={() => { setStartDate(undefined); setEndDate(undefined); }}
+                    disabledFunc={(date: Date) => {
+                        if (!planStartDate || !planEndDate) return false;
+                        const planStart = new Date(planStartDate); planStart.setHours(0, 0, 0, 0);
+                        const planEnd = new Date(planEndDate); planEnd.setHours(23, 59, 59, 999);
+                        return date < planStart || date > planEnd;
+                    }}
+                />
+                <DatePickerField
+                    label="To"
+                    date={endDate}
+                    isDesktop={isDesktop}
+                    disabledButton={!startDate}
+                    onSelect={(d: Date | undefined) => {
+                        setEndDate(d);
+                        if (d) { setStartTime(''); setEndTime(''); setShowTimeFields(false); }
+                    }}
+                    onClear={() => setEndDate(undefined)}
+                    disabledFunc={(date: Date) => {
+                        let minDate = startDate ? new Date(startDate) : (planStartDate ? new Date(planStartDate) : null);
+                        if (minDate) minDate.setHours(0, 0, 0, 0);
+                        let maxDate = planEndDate ? new Date(planEndDate) : null;
+                        if (maxDate) maxDate.setHours(23, 59, 59, 999);
+                        return !!((minDate && date < minDate) || (maxDate && date > maxDate));
+                    }}
+                />
             </div>
 
-            {/* Time Fields */}
             {!showTimeFields ? (
                 <Button
                     size={isDesktop ? "3" : "4"}
@@ -366,101 +310,26 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
                 </Button>
             ) : (
                 <div className={cn("grid gap-4 mt-1", isDesktop ? "grid-cols-2" : "grid-cols-1")}>
-                    {/* Start Time Picker */}
-                    <div className="grid gap-2">
-                        <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast>Start Time</Text>
-                        <Popover open={startTimeOpen} onOpenChange={setStartTimeOpen} modal={true}>
-                            <PopoverTrigger asChild>
-                                <button
-                                    type="button"
-                                    className={cn(
-                                        "px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] outline-none transition-all",
-                                        isDesktop ? "h-10 rounded-[8px]" : "h-12 rounded-[12px]"
-                                    )}
-                                >
-                                    <Flex gap="2" align="center" style={{ width: '100%' }}>
-                                        <ClockIcon className="shrink-0 text-[var(--gray-a10)]" />
-                                        <Text size={isDesktop ? "2" : "3"} color={startTime ? undefined : "gray"} highContrast={!!startTime} className="truncate">
-                                            {startTime ? formatTimeStr(startTime) : 'Select time'}
-                                        </Text>
-                                    </Flex>
-                                </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-2" align="start">
-                                <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
-                                    <TimePickerContent
-                                        value={startTime}
-                                        onChange={(v) => {
-                                            setStartTime(v);
-                                        }}
-                                    />
-                                    <div className="mt-3 flex flex-col gap-2">
-
-                                        {startTime && (
-                                            <>
-                                                <Button variant="solid" color="violet" size="2" style={{ width: '100%' }} onClick={() => setStartTimeOpen(false)}>
-                                                    Done
-                                                </Button>
-                                                <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { setStartTime(''); setStartTimeOpen(false); }}>
-                                                    Clear
-                                                </Button>
-                                            </>
-
-                                        )}
-                                    </div>
-                                </Theme>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-
-                    {/* End Time Picker */}
-                    <div className="grid gap-2">
-                        <Text as="label" size={isDesktop ? "2" : "3"} weight="medium" highContrast>End Time</Text>
-                        <Popover open={endTimeOpen} onOpenChange={setEndTimeOpen} modal={true}>
-                            <PopoverTrigger asChild>
-                                <button
-                                    type="button"
-                                    className={cn(
-                                        "px-3 flex items-center justify-start text-left bg-[var(--color-surface)] shadow-[inset_0_0_0_1px_var(--gray-a7)] hover:shadow-[inset_0_0_0_1px_var(--gray-a8)] focus-visible:shadow-[inset_0_0_0_1px_var(--violet-a8),0_0_0_1px_var(--violet-a8)] outline-none transition-all",
-                                        isDesktop ? "h-10 rounded-[8px]" : "h-12 rounded-[12px]"
-                                    )}
-                                >
-                                    <Flex gap="2" align="center" style={{ width: '100%' }}>
-                                        <ClockIcon className="shrink-0 text-[var(--gray-a10)]" />
-                                        <Text size={isDesktop ? "2" : "3"} color={endTime ? undefined : "gray"} highContrast={!!endTime} className="truncate">
-                                            {endTime ? formatTimeStr(endTime) : 'Select time'}
-                                        </Text>
-                                    </Flex>
-                                </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-2" align="start">
-                                <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false}>
-                                    <TimePickerContent
-                                        value={endTime}
-                                        onChange={(v) => {
-                                            setEndTime(v);
-                                        }}
-                                    />
-                                    <div className="mt-3 flex flex-col gap-2">
-                                        <Button variant="solid" color="violet" size="2" style={{ width: '100%' }} onClick={() => setEndTimeOpen(false)}>
-                                            Done
-                                        </Button>
-                                        {endTime && (
-                                            <Button variant="soft" color="gray" size="2" style={{ width: '100%' }} onClick={() => { setEndTime(''); setEndTimeOpen(false); }}>
-                                                Clear
-                                            </Button>
-                                        )}
-                                    </div>
-                                </Theme>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
+                    <TimePickerField
+                        label="Start Time"
+                        time={startTime}
+                        isDesktop={isDesktop}
+                        onChange={setStartTime}
+                        onClear={() => setStartTime('')}
+                    />
+                    <TimePickerField
+                        label="End Time"
+                        time={endTime}
+                        isDesktop={isDesktop}
+                        onChange={setEndTime}
+                        onClear={() => setEndTime('')}
+                    />
                 </div>
             )}
 
             {isDesktop ? (
                 <DialogFooter className="pt-4 mt-2 border-t border-border/50">
-                    <Button size="3" variant="soft" radius='medium' color="gray" type="button" onClick={() => onOpenChange(false)}>
+                    <Button size="3" variant="soft" radius='medium' color="gray" type="button" onClick={onCancel}>
                         Cancel
                     </Button>
                     <Button size="3" variant="solid" radius='medium' color="violet" type="submit" disabled={!title.trim()}>
@@ -468,47 +337,102 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
                     </Button>
                 </DialogFooter>
             ) : (
-                <DrawerFooter className="px-0 pt-4 pb-6 mt-4 border-t border-border/50">
-                    <Button size="4" variant="solid" radius='large' color="violet" type="submit" disabled={!title.trim()}>
+                <DrawerFooter className="px-0 border-t border-border/50">
+                    <Button
+                        size="4"
+                        variant="solid"
+                        radius='large'
+                        color="violet"
+                        type="submit"
+                        disabled={!title.trim()}
+                        style={{ width: '100%' }}
+                    >
                         {action ? 'Save Changes' : 'Add Action'}
                     </Button>
-                    <DrawerClose asChild>
-                        <Button size="4" variant="soft" radius='large' color="gray" type="button">
-                            Cancel
-                        </Button>
-                    </DrawerClose>
                 </DrawerFooter>
             )}
         </form>
+    );
+}
+
+interface ActionDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    planTitle: string;
+    planStartDate?: string;
+    planEndDate?: string;
+    action?: Action | null;
+    onSave: (title: string, options?: any, actionId?: string) => void;
+}
+
+export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, planEndDate, action, onSave }: ActionDialogProps) {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+
+    const handleSave = (title: string, options: any, actionId?: string) => {
+        onSave(title, options, actionId);
+        onOpenChange(false);
+    };
+
+    const headerText = action ? 'Edit Action' : 'Add New Action';
+
+    const FormContent = (
+        <Theme appearance="inherit" accentColor="violet" scaling={isDesktop ? "90%" : "100%"} radius="large" hasBackground={false} style={{ display: 'contents' }}>
+            <style>
+                {`
+                .theme-scale-90 {
+                    zoom: 0.9;
+                }
+                `}
+            </style>
+
+            {isDesktop ? (
+                <DialogHeader className="space-y-1.5 pb-1">
+                    <DialogTitle asChild>
+                        <Heading size="4" weight="medium" highContrast>
+                            {headerText}
+                        </Heading>
+                    </DialogTitle>
+                    <DialogDescription asChild>
+                        <Flex gap="2" align="center" className="mt-1">
+                            <Text size="2" color="gray">Action for Plan:</Text>
+                            <Badge size="1" color="violet" variant="soft" radius="medium">{planTitle}</Badge>
+                        </Flex>
+                    </DialogDescription>
+                </DialogHeader>
+            ) : (
+                <DrawerHeader className="text-left px-4">
+                    <DrawerTitle asChild>
+                        <Heading size="6" weight="medium" highContrast>
+                            {headerText}
+                        </Heading>
+                    </DrawerTitle>
+                    <DrawerDescription asChild>
+                        <Flex gap="2" align="center" className="mt-2">
+                            <Text size="3" color="gray">Action for Plan:</Text>
+                            <Badge size="2" color="violet" variant="soft" radius="medium">{planTitle}</Badge>
+                        </Flex>
+                    </DrawerDescription>
+                </DrawerHeader>
+            )}
+
+            {open && (
+                <ActionForm
+                    action={action}
+                    isDesktop={isDesktop}
+                    planStartDate={planStartDate}
+                    planEndDate={planEndDate}
+                    onCancel={() => onOpenChange(false)}
+                    onSubmit={handleSave}
+                />
+            )}
+        </Theme>
     );
 
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
                 <DialogContent className="sm:max-w-[425px]">
-                    <Theme appearance="inherit" accentColor="violet" scaling="90%" radius="large" hasBackground={false} style={{ display: 'contents' }}>
-                        <style>
-                            {`
-                  .theme-scale-90 {
-                    zoom: 0.9;
-                  }
-                `}
-                        </style>
-                        <DialogHeader className="space-y-1.5 pb-1">
-                            <DialogTitle asChild>
-                                <Heading size="4" weight="medium" highContrast>
-                                    {action ? 'Edit Action' : 'Add New Action'}
-                                </Heading>
-                            </DialogTitle>
-                            <DialogDescription asChild>
-                                <Flex gap="2" align="center" className="mt-1">
-                                    <Text size="2" color="gray">Action for Plan:</Text>
-                                    <Badge size="1" color="violet" variant="soft" radius="medium">{planTitle}</Badge>
-                                </Flex>
-                            </DialogDescription>
-                        </DialogHeader>
-                        {renderActionForm()}
-                    </Theme>
+                    {FormContent}
                 </DialogContent>
             </Dialog>
         );
@@ -516,32 +440,9 @@ export function ActionDialog({ open, onOpenChange, planTitle, planStartDate, pla
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="px-2 pb-12">
-                <Theme appearance="inherit" accentColor="violet" scaling="100%" radius="large" hasBackground={false} style={{ display: 'contents' }}>
-                    <style>
-                        {`
-                  .theme-scale-90 {
-                    zoom: 0.9;
-                  }
-                `}
-                    </style>
-                    <DrawerHeader className="text-left px-4 pt-6 pb-6">
-                        <DrawerTitle asChild>
-                            <Heading size="6" weight="medium" highContrast>
-                                {action ? 'Edit Action' : 'Add New Action'}
-                            </Heading>
-                        </DrawerTitle>
-                        <DrawerDescription asChild>
-                            <Flex gap="2" align="center" className="mt-2">
-                                <Text size="3" color="gray">Action for Plan:</Text>
-                                <Badge size="2" color="violet" variant="soft" radius="medium">{planTitle}</Badge>
-                            </Flex>
-                        </DrawerDescription>
-                    </DrawerHeader>
-                    {renderActionForm()}
-                </Theme>
+            <DrawerContent className="px-2 rounded-t-3xl">
+                {FormContent}
             </DrawerContent>
         </Drawer>
     );
 }
-

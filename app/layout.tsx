@@ -10,19 +10,33 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Planova",
+    // Startup images help iOS render the correct splash screen
+    startupImage: [
+      {
+        url: "/icons/icon-512x512.png",
+      },
+    ],
   },
   formatDetection: {
     telephone: false,
   },
+  // Ensure iOS does not cache the page in a way that loses auth state
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#8b5cf6",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#8b5cf6" },
+    { media: "(prefers-color-scheme: dark)", color: "#6d28d9" },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

@@ -81,7 +81,7 @@ export default function HistoryPage() {
     const hasMoreActions = visibleActionCount < filteredActions.length;
 
     return (
-        <div className="container mx-auto px-6 max-w-[1600px]">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[1600px]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 md:mb-6">
                 <SearchBar
                     placeholder="Search history..."
