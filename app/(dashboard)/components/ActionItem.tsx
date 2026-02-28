@@ -27,7 +27,7 @@ const ActionDate = ({ action }: { action: Action }) => {
 
   if (action.dateMode === 'date_range' && action.startDate && action.endDate) {
     return (
-      <Text size="1" color="gray" className="block mt-0.5">
+      <Text size="1" color="gray" className="block mt-0.5 truncate w-full">
         {formatDate(action.startDate)} - {formatDate(action.endDate)}
       </Text>
     );
@@ -37,15 +37,17 @@ const ActionDate = ({ action }: { action: Action }) => {
     const timeStr = formatTimeRange(action.startTime, action.endTime);
 
     return (
-      <Text size="1" color="gray" className="flex items-center gap-1 mt-0.5">
-        {formatDate(action.startDate)}
+      <div className="flex items-center gap-1 mt-0.5 w-full overflow-hidden">
+        <Text size="1" color="gray" className="truncate shrink-0">
+          {formatDate(action.startDate)}
+        </Text>
         {timeStr && (
-          <>
-            <span className="mx-1">•</span>
-            <span className="text-xs">{timeStr}</span>
-          </>
+          <div className="flex items-center truncate min-w-0">
+            <span className="mx-1 text-gray-400">•</span>
+            <span className="text-xs text-gray-500 truncate">{timeStr}</span>
+          </div>
         )}
-      </Text>
+      </div>
     );
   }
 
@@ -66,7 +68,7 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
   return (
     <div
       className={cn(
-        "flex items-center gap-2 py-2 px-1 rounded-md group transition-colors",
+        "flex items-center gap-2 py-2 px-1 rounded-md group transition-colors w-full min-w-0",
         isCanceled && "opacity-50"
       )}
     >
@@ -77,13 +79,14 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
         className={cn(isCanceled && "cursor-not-allowed")}
       />
 
-      <div className="flex-1 min-w-0 ml-1">
+      <div className="flex-1 min-w-0 ml-1 overflow-hidden">
         <Text
           size="2"
           color={isInactive ? 'gray' : undefined}
           highContrast={!isInactive}
+          as="div"
           className={cn(
-            "transition-all block truncate",
+            "transition-all truncate w-full",
             isInactive && "line-through"
           )}
         >
@@ -92,7 +95,7 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
         <ActionDate action={action} />
       </div>
 
-      <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
         {isCanceled ? (
           <Button
             variant="ghost"

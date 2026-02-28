@@ -42,7 +42,7 @@ export function DangerZoneSection({
                     ) : (
                         <Trash2 className="hidden sm:block h-3 w-3" />
                     )}
-                    <span className="sm:inline text-xs sm:text-sm w-[60px] sm:w-auto text-left sm:text-center">Clear Data</span>
+                    <span className="sm:inline text-xs sm:text-sm w-[60px] sm:w-auto text-center">Clear Data</span>
                 </button>
             </div>
 
@@ -67,7 +67,7 @@ export function DangerZoneSection({
                     ) : (
                         <AlertTriangle className="hidden sm:block h-3 w-3" />
                     )}
-                    <span className="sm:inline text-xs sm:text-sm w-[60px] sm:w-auto text-left sm:text-center">Delete Account</span>
+                    <span className="sm:inline text-xs sm:text-sm w-[60px] sm:w-auto text-center">Delete Account</span>
                 </button>
             </div>
         </div>

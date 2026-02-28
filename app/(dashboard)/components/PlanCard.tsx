@@ -61,17 +61,10 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
 
   return (
     <>
-      <Card className={cn(
-        "transition-all duration-200 ease-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:-translate-y-1 relative border-border/60 dark:bg-card/80 dark:border-border/40 border-l-[3px] border-l-transparent",
-        overdue
-          ? "dark:border-l-destructive/50 border-l-destructive hover:border-l-destructive/80"
-          : isOngoing
-            ? "dark:border-l-green-500/50 border-l-green-500 hover:border-l-green-500/80"
-            : "hover:border-primary/40 dark:hover:border-primary/30"
-      )}>
-        <CardHeader className="p-4 pb-2">
+      <Card className="transition-all duration-200 ease-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:-translate-y-1 relative border-border/60 dark:bg-card/80 dark:border-border/40 w-full min-w-0 overflow-hidden gap-0">
+        <CardHeader className="px-4 w-full min-w-0">
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1.5">
+            <div>
               <div className="flex items-center gap-2">
                 <Heading as="h3" size="4" weight="medium">{plan.title}</Heading>
               </div>
@@ -110,7 +103,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
             </DropdownMenu>
           </div>
 
-          <div className="flex items-center gap-4 pt-3 pb-1">
+          <div className="flex items-center gap-4">
             <Flex align="center" gap="2">
               <CalendarIcon className="h-3.5 w-3.5 text-foreground" />
               <Text size="1" color="gray">{formatDate(plan.startDate)} - {formatDate(plan.endDate)}</Text>
@@ -137,7 +130,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3 p-4 pt-1">
+        <CardContent className="space-y-3 p-4 w-full min-w-0">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -160,7 +153,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
           </div>
 
           {expanded && planActions.length > 0 && (
-            <div className="space-y-1 border-t pt-2 max-h-[160px] overflow-y-auto pr-1">
+            <div className="space-y-1 border-t pt-2 max-h-[160px] overflow-y-auto overflow-x-hidden pr-1 w-full min-w-0">
               {planActions.map((action) => (
                 <ActionItem
                   key={action.id}

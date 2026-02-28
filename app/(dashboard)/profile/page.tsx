@@ -286,7 +286,6 @@ export default function ProfilePage() {
         if (!user) return;
         setDeleteLoading(true);
         try {
-            // 1. Clear data first
             const { deleteDoc, doc } = await import("firebase/firestore");
             const [plansSnap, actionsSnap] = await Promise.all([
                 getDocs(query(collection(db, "plans"), where("userId", "==", user.uid))),
@@ -297,10 +296,8 @@ export default function ProfilePage() {
                 ...actionsSnap.docs.map((d) => deleteDoc(doc(db, "actions", d.id))),
             ]);
 
-            // 2. Remove profile from localStorage
             localStorage.removeItem(`planova_profile_${user.uid}`);
 
-            // 3. Delete auth account
             const { deleteUser } = await import("firebase/auth");
             await deleteUser(user);
             window.location.href = "/login";

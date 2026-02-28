@@ -57,7 +57,7 @@ export function PlanColumn({
                     <Text size="2" color="gray" className="text-center italic">No plans</Text>
                 </>
             ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-4 w-full min-w-0">
                     {plans.map((plan) => (
                         <PlanCard
                             key={plan.id}
