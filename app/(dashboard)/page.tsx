@@ -6,7 +6,7 @@ import { Button } from '@/app/components/ui/button';
 import { PlanCard } from '@/app/(dashboard)/components/PlanCard';
 import { PlanColumn } from '@/app/(dashboard)/components/PlanColumn';
 import { PlanDialog } from '@/app/(dashboard)/components/PlanDialog';
-import { PlusIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { PlusIcon, ChevronDownIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { Heading, Spinner, Text } from '@radix-ui/themes';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/app/components/ui/dropdown-menu';
 import { calculateProgress } from '@/app/utils/helpers';
@@ -15,6 +15,7 @@ import { SortDropdown, SortDirection } from '@/app/components/SortDropdown';
 import { SearchBar } from '@/app/components/SearchBar';
 import { useAppData } from '@/app/hooks/useAppData';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 type SortField = 'start_date' | 'progress' | 'task_count';
 
@@ -104,6 +105,16 @@ export default function Dashboard() {
       case 'overdue': return 'Overdue';
       default: return 'Ongoing';
     }
+  };
+
+  const getPlanCategory = (startDate: string, endDate: string): 'coming_up' | 'ongoing' | 'overdue' => {
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (end < now) return 'overdue';
+    if (start > now) return 'coming_up';
+    return 'ongoing';
   };
 
   return (
@@ -265,7 +276,25 @@ export default function Dashboard() {
       <PlanDialog
         open={showCreatePlan}
         onOpenChange={setShowCreatePlan}
-        onSave={(newPlan) => handleCreatePlan(newPlan)}
+        onSave={(newPlan) => {
+          handleCreatePlan(newPlan);
+
+          const category = getPlanCategory(newPlan.startDate, newPlan.endDate);
+          const categoryLabels = {
+            coming_up: 'Coming Up',
+            ongoing: 'Ongoing',
+            overdue: 'Overdue'
+          };
+
+          toast.custom((t) => (
+            <div className="flex items-center gap-2 p-3 px-4 rounded-xl bg-accent border border-border/50 shadow-sm mx-auto w-[350px] max-w-[calc(100vw-32px)]">
+              <CheckCircledIcon className="h-4 w-4 text-primary shrink-0" />
+              <Text size="2" weight="medium" className="truncate text-foreground">Plan added to {categoryLabels[category]}</Text>
+            </div>
+          ));
+          // On mobile, auto-switch to the relevant filter
+          setMobileFilter(category);
+        }}
       />
     </div>
   );

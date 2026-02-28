@@ -3,6 +3,7 @@ import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { Toaster } from "./components/Toaster";
 
 export const metadata: Metadata = {
   title: "Planova",
@@ -63,6 +64,7 @@ export default function RootLayout({
             <div vaul-drawer-wrapper="">
               {children}
             </div>
+            <Toaster />
           </Theme>
         </ThemeProvider>
       </body>
