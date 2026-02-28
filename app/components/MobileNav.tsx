@@ -26,7 +26,7 @@ export function MobileNav() {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "flex flex-col items-center justify-center gap-1 transition-all px-4 pb-2 pt-1 rounded-xl",
+                            "flex flex-col items-center justify-start gap-1 transition-all rounded-xl w-16 h-16 mt-3",
                             isActive
                                 ? "text-primary"
                                 : "text-muted-foreground hover:text-primary"
