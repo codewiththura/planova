@@ -5,7 +5,7 @@ import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
 import { PlusIcon, CalendarIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, CheckCircledIcon, DotsHorizontalIcon, Pencil1Icon, TrashIcon, CrossCircledIcon } from '@radix-ui/react-icons';
 import { Heading, Text, Flex } from '@radix-ui/themes';
-import { calculateProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
+import { calculateDetailedProgress, getDaysLeft, formatDate, isOverdue } from '@/app/utils/helpers';
 import { ActionItem } from './ActionItem';
 import { ActionDialog } from './ActionDialog';
 import { PlanDialog } from './PlanDialog';
@@ -39,7 +39,9 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
   const [actionToEdit, setActionToEdit] = useState<Action | null>(null);
   const [actionToDelete, setActionToDelete] = useState<Action | null>(null);
 
-  const progress = calculateProgress(plan, actions);
+  const detailedProgress = calculateDetailedProgress(plan, actions);
+  const progress = detailedProgress.completed;
+  const activeProgress = detailedProgress.active;
   const daysLeft = getDaysLeft(plan);
   const overdue = isOverdue(plan);
   const planActions = actions.filter(action => action.planId === plan.id);
@@ -123,7 +125,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
               <Text size="1" weight="bold" color="gray" className="uppercase tracking-wider">Progress</Text>
               <Text size="2" weight="bold" highContrast>{progress}%</Text>
             </div>
-            <Progress value={progress} className="h-1.5 dark:bg-muted/40" />
+            <Progress value={progress} activeValue={activeProgress} className="h-1.5 dark:bg-muted/40" />
             <Text size="1" color="gray">
               {planActions.filter(a => a.status === 'done').length} of {activeActions.length} actions completed
             </Text>

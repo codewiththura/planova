@@ -1,4 +1,4 @@
-export type ActionStatus = 'pending' | 'done' | 'cancel';
+export type ActionStatus = 'pending' | 'active' | 'done' | 'cancel';
 
 export type PlanStatus = 'active' | 'completed' | 'cancel';
 

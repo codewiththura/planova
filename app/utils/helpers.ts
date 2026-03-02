@@ -9,6 +9,19 @@ export const calculateProgress = (plan: Plan, actions: Action[]): number => {
   return Math.round((completedActions / planActions.length) * 100);
 };
 
+export const calculateDetailedProgress = (plan: Plan, actions: Action[]): { completed: number; active: number } => {
+  const planActions = actions.filter(action => action.planId === plan.id);
+
+  if (planActions.length === 0) return { completed: 0, active: 0 };
+
+  const completedActions = planActions.filter(action => action.status === 'done').length;
+  const activeActions = planActions.filter(action => action.status === 'active').length;
+  return {
+    completed: Math.round((completedActions / planActions.length) * 100),
+    active: Math.round((activeActions / planActions.length) * 100)
+  };
+};
+
 export const getDaysLeft = (plan: Plan): number => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

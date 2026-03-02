@@ -58,10 +58,12 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
   const isCanceled = action.status === 'cancel';
   const isDone = action.status === 'done';
   const isPending = action.status === 'pending';
+  const isActive = action.status === 'active';
   const isInactive = isCanceled || isDone;
 
   const handleToggleStatus = () => {
-    if (isPending) onUpdateStatus(action.id, 'done');
+    if (isPending) onUpdateStatus(action.id, 'active');
+    else if (isActive) onUpdateStatus(action.id, 'done');
     else if (isDone) onUpdateStatus(action.id, 'pending');
   };
 
@@ -73,7 +75,7 @@ export function ActionItem({ action, onUpdateStatus, onEditAction, onDeleteActio
       )}
     >
       <Checkbox
-        checked={isDone}
+        checked={isDone ? true : isActive ? 'indeterminate' : false}
         onCheckedChange={handleToggleStatus}
         disabled={isCanceled}
         className={cn(isCanceled && "cursor-not-allowed")}
