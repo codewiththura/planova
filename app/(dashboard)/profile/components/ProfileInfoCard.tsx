@@ -50,7 +50,7 @@ export function ProfileInfoCard({
     saveProfile,
 }: ProfileInfoCardProps) {
     return (
-        <div className="w-full md:w-[38%] p-2 sm:p-6 flex flex-col">
+        <div className="w-full md:w-[38%] p-2 sm:px-6 flex flex-col">
             <div className="flex items-start justify-between mb-1">
                 <div>
                     <Heading size="4" weight="bold">Profile Information</Heading>
@@ -91,7 +91,7 @@ export function ProfileInfoCard({
                     <Text as="p" size="2" color="gray" className="truncate mt-0.5">{displayEmail}</Text>
 
                     {/* Role */}
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 mt-2">
                         <BriefcaseIcon className="h-4 w-4 text-muted-foreground shrink-0" />
                         {isEditing ? (
                             <input
@@ -106,7 +106,7 @@ export function ProfileInfoCard({
                     </div>
 
                     {/* Bio */}
-                    <div className="mt-4">
+                    <div className="mt-2">
                         {isEditing ? (
                             <textarea
                                 value={editBio}
