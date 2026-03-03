@@ -51,7 +51,7 @@ export function ProfileInfoCard({
     saveProfile,
 }: ProfileInfoCardProps) {
     return (
-        <div className="w-full md:w-[38%] sm:px-6 flex flex-col">
+        <div className="w-full md:w-[38%] sm:px-6 flex flex-col overflow-hidden mt-2">
             <div className="flex items-start justify-between mb-1">
                 <div>
                     <Heading size="4" weight="bold">Profile Information</Heading>
@@ -67,7 +67,7 @@ export function ProfileInfoCard({
                 </Link>
             </div>
 
-            <div className="mt-6 flex items-start gap-5">
+            <div className="mt-6 flex items-start gap-5 overflow-hidden">
                 {/* Avatar */}
                 <div className="h-20 w-20 rounded-full shrink-0 overflow-hidden bg-accent flex items-center justify-center border-2 border-border">
                     {photoURL ? (
@@ -77,14 +77,14 @@ export function ProfileInfoCard({
                     )}
                 </div>
                 {/* Identity & Details */}
-                <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex-1 overflow-hidden">
+                    <div className="flex items-center gap-2 overflow-hidden">
                         {isEditing ? (
                             <input
                                 ref={nameInputRef}
                                 value={editName}
                                 onChange={(e) => setEditName(e.target.value)}
-                                className="text-xl font-bold bg-transparent border-b border-primary focus:outline-none flex-1 text-foreground pb-0.5 min-w-0"
+                                className="text-xl font-bold bg-transparent border-b border-primary focus:outline-none w-0 flex-1 text-foreground pb-0.5"
                                 placeholder="Your name"
                             />
                         ) : (

@@ -5,7 +5,9 @@ import { onAuthStateChanged, User, signOut } from "firebase/auth";
 import { auth, db } from "@/app/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { Heading } from "@radix-ui/themes";
+import { ArrowLeft } from "lucide-react";
 
 import { PreferencesSection } from "./components/PreferencesSection";
 import { DataManagementSection } from "./components/DataManagementSection";
@@ -13,6 +15,7 @@ import { DangerZoneSection } from "./components/DangerZoneSection";
 import { ConfirmClearDialog, ConfirmDeleteAccountDialog } from "./components/ProfileDialogs";
 
 export default function SettingsPage() {
+    const router = useRouter();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [user, setUser] = useState<User | null>(null);
@@ -127,7 +130,16 @@ export default function SettingsPage() {
 
     return (
         <div className="container mx-auto px-4 sm:px-6 max-w-3xl pb-10">
-            <Heading size="6" weight="bold" className="mb-2">Settings</Heading>
+            <div className="flex items-center gap-3 mb-2">
+                <button
+                    onClick={() => router.back()}
+                    className="p-1.5 -ml-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                    title="Go back"
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </button>
+                <Heading size="6" weight="bold">Settings</Heading>
+            </div>
 
             <PreferencesSection
                 notifEnabled={notifEnabled}
