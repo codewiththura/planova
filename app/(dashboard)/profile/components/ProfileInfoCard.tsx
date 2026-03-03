@@ -51,7 +51,7 @@ export function ProfileInfoCard({
     saveProfile,
 }: ProfileInfoCardProps) {
     return (
-        <div className="w-full md:w-[38%] p-2 sm:px-6 flex flex-col">
+        <div className="w-full md:w-[38%] sm:px-6 flex flex-col">
             <div className="flex items-start justify-between mb-1">
                 <div>
                     <Heading size="4" weight="bold">Profile Information</Heading>

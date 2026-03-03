@@ -119,7 +119,7 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 max-w-[1600px]">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 md:mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 md:mb-6">
         <SearchBar
           placeholder="Search plans..."
           value={searchQuery}
@@ -139,7 +139,7 @@ export default function Dashboard() {
           <div className="md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 bg-background shadow-sm hover:bg-muted/50 rounded-full h-10 px-4">
+                <Button variant="outline" className="gap-1 bg-background hover:bg-muted/50 rounded-full h-10 px-4">
                   {getFilterLabel()}
                   <ChevronDownIcon className="h-4 w-4 text-muted-foreground" />
                 </Button>

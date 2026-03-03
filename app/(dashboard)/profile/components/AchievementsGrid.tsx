@@ -19,7 +19,7 @@ interface AchievementsGridProps {
 
 export function AchievementsGrid({ achievements }: AchievementsGridProps) {
     return (
-        <div className="flex-1 p-2 sm:px-6 w-full md:w-[62%]">
+        <div className="flex-1 sm:px-6 w-full md:w-[62%]">
             <Heading size="4" weight="bold">Your Achievements</Heading>
             <Text as="p" size="2" color="gray">Track your progress and unlock new achievements</Text>
 

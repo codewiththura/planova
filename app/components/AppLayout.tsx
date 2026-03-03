@@ -17,7 +17,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 isCollapsed ? "md:ml-20" : "md:ml-56"
             )}>
                 <TopNavbar />
-                <main className="flex-1 w-full pt-5 pb-24 md:pb-10">
+                <main className="flex-1 w-full pt-2 sm:pt-3 pb-24 md:pb-10">
                     {children}
                 </main>
                 <MobileNav />
