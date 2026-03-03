@@ -19,10 +19,6 @@ import {
 // Components
 import { ProfileInfoCard } from "./components/ProfileInfoCard";
 import { AchievementsGrid } from "./components/AchievementsGrid";
-import { PreferencesSection } from "./components/PreferencesSection";
-import { DataManagementSection } from "./components/DataManagementSection";
-import { DangerZoneSection } from "./components/DangerZoneSection";
-import { ConfirmClearDialog, ConfirmDeleteAccountDialog } from "./components/ProfileDialogs";
 
 interface AchievementDef {
     id: string;
@@ -125,20 +121,12 @@ export default function ProfilePage() {
         completedActions: 0,
     });
 
-    const [notifEnabled, setNotifEnabled] = useState(true);
-    const [language, setLanguage] = useState("en");
-
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState("");
     const [editBio, setEditBio] = useState("");
     const [editRole, setEditRole] = useState("");
     const [editSaving, setEditSaving] = useState(false);
     const nameInputRef = useRef<HTMLInputElement>(null);
-
-    const [showClearConfirm, setShowClearConfirm] = useState(false);
-    const [clearLoading, setClearLoading] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const getUserExtra = (uid: string) => {
         if (typeof window === "undefined") return { bio: "", role: "" };
@@ -213,6 +201,9 @@ export default function ProfilePage() {
 
     const openEdit = () => {
         setEditName(user?.displayName || "");
+        const extra = user ? getUserExtra(user.uid) : { bio: "", role: "" };
+        setEditBio(extra.bio || "");
+        setEditRole(extra.role || "");
         setIsEditing(true);
         setTimeout(() => nameInputRef.current?.focus(), 50);
     };
@@ -222,12 +213,13 @@ export default function ProfilePage() {
         setEditSaving(true);
         try {
             if (editName.trim() && editName.trim() !== user.displayName) {
-                await updateProfile(user, { displayName: editName.trim() });
-                setUser({ ...user, displayName: editName.trim() } as User);
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    await updateProfile(currentUser, { displayName: editName.trim() });
+                    setUser(Object.assign(Object.create(Object.getPrototypeOf(currentUser)), currentUser));
+                }
             }
             setUserExtra(user.uid, { bio: editBio, role: editRole });
-            setEditBio(editBio);
-            setEditRole(editRole);
         } catch (e) {
             console.error("Failed to save profile:", e);
         } finally {
@@ -242,77 +234,6 @@ export default function ProfilePage() {
             window.location.href = "/login";
         } catch (e) {
             console.error("Failed to sign out:", e);
-        }
-    };
-
-    const handleExport = () => {
-        const data = {
-            exportedAt: new Date().toISOString(),
-            user: { name: displayName, email: displayEmail },
-            stats,
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "planova-data.json";
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const handleClearData = async () => {
-        if (!user) return;
-        setClearLoading(true);
-        try {
-            const { deleteDoc, doc } = await import("firebase/firestore");
-            const [plansSnap, actionsSnap] = await Promise.all([
-                getDocs(query(collection(db, "plans"), where("userId", "==", user.uid))),
-                getDocs(query(collection(db, "actions"), where("userId", "==", user.uid))),
-            ]);
-            await Promise.all([
-                ...plansSnap.docs.map((d) => deleteDoc(doc(db, "plans", d.id))),
-                ...actionsSnap.docs.map((d) => deleteDoc(doc(db, "actions", d.id))),
-            ]);
-            setStats({ totalPlans: 0, completedPlans: 0, totalActions: 0, completedActions: 0 });
-        } catch (e) {
-            console.error("Failed to clear data:", e);
-        } finally {
-            setClearLoading(false);
-            setShowClearConfirm(false);
-        }
-    };
-
-    const handleDeleteAccount = async () => {
-        if (!user) return;
-        setDeleteLoading(true);
-        try {
-            const { deleteDoc, doc } = await import("firebase/firestore");
-            const [plansSnap, actionsSnap] = await Promise.all([
-                getDocs(query(collection(db, "plans"), where("userId", "==", user.uid))),
-                getDocs(query(collection(db, "actions"), where("userId", "==", user.uid))),
-            ]);
-            await Promise.all([
-                ...plansSnap.docs.map((d) => deleteDoc(doc(db, "plans", d.id))),
-                ...actionsSnap.docs.map((d) => deleteDoc(doc(db, "actions", d.id))),
-            ]);
-
-            localStorage.removeItem(`planova_profile_${user.uid}`);
-
-            const { deleteUser } = await import("firebase/auth");
-            await deleteUser(user);
-            window.location.href = "/login";
-        } catch (e: any) {
-            console.error("Failed to delete account:", e);
-            if (e.code === "auth/requires-recent-login") {
-                alert("Please log in again before deleting your account for security reasons.");
-                await signOut(auth);
-                window.location.href = "/login";
-            } else {
-                alert("Failed to delete account. Please try again later.");
-            }
-        } finally {
-            setDeleteLoading(false);
-            setShowDeleteConfirm(false);
         }
     };
 
@@ -347,37 +268,7 @@ export default function ProfilePage() {
 
                 <AchievementsGrid achievements={achievements} />
             </div>
-
-            <PreferencesSection
-                notifEnabled={notifEnabled}
-                setNotifEnabled={setNotifEnabled}
-                currentTheme={currentTheme}
-                setTheme={setTheme}
-                language={language}
-                setLanguage={setLanguage}
-                mounted={mounted}
-            />
-
-            <DataManagementSection handleExport={handleExport} />
-
-            <DangerZoneSection
-                setShowClearConfirm={setShowClearConfirm}
-                setShowDeleteConfirm={setShowDeleteConfirm}
-                clearLoading={clearLoading}
-                deleteLoading={deleteLoading}
-            />
-
-            <ConfirmClearDialog
-                open={showClearConfirm}
-                onConfirm={handleClearData}
-                onCancel={() => setShowClearConfirm(false)}
-            />
-
-            <ConfirmDeleteAccountDialog
-                open={showDeleteConfirm}
-                onConfirm={handleDeleteAccount}
-                onCancel={() => setShowDeleteConfirm(false)}
-            />
         </div>
     );
 }
+

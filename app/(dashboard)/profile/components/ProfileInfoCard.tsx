@@ -1,8 +1,9 @@
 "use client";
 
 import { Heading, Text } from "@radix-ui/themes";
-import { BriefcaseIcon, LogOut, Pencil, Check, X } from "lucide-react";
+import { BriefcaseIcon, LogOut, Pencil, Check, X, Settings } from "lucide-react";
 import { RefObject } from "react";
+import Link from "next/link";
 
 interface ProfileInfoCardProps {
     displayName: string;
@@ -56,14 +57,14 @@ export function ProfileInfoCard({
                     <Heading size="4" weight="bold">Profile Information</Heading>
                     <Text as="p" size="2" color="gray" className="mt-0.5">Your personal information and bio</Text>
                 </div>
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive transition-colors py-1 px-2 rounded-lg hover:bg-destructive/10"
-                    title="Sign out"
+                <Link
+                    href="/settings"
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded-lg hover:bg-muted"
+                    title="Settings"
                 >
-                    <LogOut className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Logout</span>
-                </button>
+                    <Settings className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Settings</span>
+                </Link>
             </div>
 
             <div className="mt-6 flex items-start gap-5">
@@ -77,17 +78,52 @@ export function ProfileInfoCard({
                 </div>
                 {/* Identity & Details */}
                 <div className="min-w-0 flex-1">
-                    {isEditing ? (
-                        <input
-                            ref={nameInputRef}
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                            className="text-xl font-bold bg-transparent border-b border-primary focus:outline-none w-full text-foreground pb-0.5"
-                            placeholder="Your name"
-                        />
-                    ) : (
-                        <Heading size="5" weight="bold" className="truncate">{displayName}</Heading>
-                    )}
+                    <div className="flex items-center justify-between gap-2">
+                        {isEditing ? (
+                            <input
+                                ref={nameInputRef}
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                className="text-xl font-bold bg-transparent border-b border-primary focus:outline-none flex-1 text-foreground pb-0.5 min-w-0"
+                                placeholder="Your name"
+                            />
+                        ) : (
+                            <Heading size="5" weight="bold" className="truncate flex-1">{displayName}</Heading>
+                        )}
+                        <div className="flex items-center gap-1 shrink-0">
+                            {isEditing ? (
+                                <>
+                                    <button
+                                        onClick={saveProfile}
+                                        disabled={editSaving}
+                                        className="p-2 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                                        title="Save Changes"
+                                    >
+                                        {editSaving ? (
+                                            <span className="h-4 w-4 block rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                                        ) : (
+                                            <Check className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() => setIsEditing(false)}
+                                        className="p-2 rounded-md hover:bg-muted text-muted-foreground transition-colors"
+                                        title="Discard Changes"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={openEdit}
+                                    className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                    title="Edit Profile"
+                                >
+                                    <Pencil className="h-3 w-3" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
                     <Text as="p" size="2" color="gray" className="truncate mt-0.5">{displayEmail}</Text>
 
                     {/* Role */}
@@ -125,39 +161,15 @@ export function ProfileInfoCard({
                 </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="mt-6 flex gap-2">
-                {isEditing ? (
-                    <>
-                        <button
-                            onClick={saveProfile}
-                            disabled={editSaving}
-                            className="flex-1 flex items-center justify-center gap-2 bg-primary hover:opacity-90 text-primary-foreground rounded-lg py-2 text-xs font-medium transition-opacity disabled:opacity-60"
-                        >
-                            {editSaving ? (
-                                <span className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
-                            ) : (
-                                <Check className="h-3 w-3" />
-                            )}
-                            Save Changes
-                        </button>
-                        <button
-                            onClick={() => setIsEditing(false)}
-                            className="py-2 px-4 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted/50 transition-colors flex items-center gap-1.5"
-                        >
-                            <X className="h-3 w-3" />
-                            Cancel
-                        </button>
-                    </>
-                ) : (
-                    <button
-                        onClick={openEdit}
-                        className="w-full flex items-center justify-center gap-2 bg-primary hover:opacity-90 text-primary-foreground rounded-lg py-2 text-xs font-medium transition-opacity"
-                    >
-                        <Pencil className="h-3 w-3" />
-                        Edit Profile
-                    </button>
-                )}
+            {/* Logout button */}
+            <div className="mt-6">
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 border border-destructive/20 text-destructive hover:bg-destructive/10 rounded-lg py-2 text-xs font-medium transition-colors"
+                >
+                    <LogOut className="h-3 w-3" />
+                    Logout
+                </button>
             </div>
         </div>
     );
