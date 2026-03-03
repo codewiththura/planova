@@ -13,8 +13,8 @@ interface CompletedPlanCardProps {
 export function CompletedPlanCard({ plan, onReactivate }: CompletedPlanCardProps) {
     return (
         <Card className="transition-all duration-100 ease-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative border-border/60 dark:bg-card/80 dark:border-border/40 hover:border-primary/40 dark:hover:border-primary/30 rounded-xl w-full">
-            <CardContent className="p-4 flex flex-row items-center justify-between gap-3 sm:gap-10">
-                <div className="flex items-center gap-3 w-full">
+            <CardContent className="p-4 flex flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="mt-0.5 shrink-0">
                         {plan.status === 'completed' ? (
                             <CheckCircledIcon className="h-5 w-5 text-muted-foreground" />

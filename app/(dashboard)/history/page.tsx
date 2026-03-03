@@ -122,7 +122,7 @@ export default function HistoryPage() {
                     <Text size="3" color="gray">Loading history...</Text>
                 </div>
             ) : (
-                <div className="max-w-[1600px] container mx-auto pb-12 flex flex-col sm:grid sm:grid-cols-2 sm:gap-14">
+                <div className="pb-12 flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:gap-14">
                     <section className={cn("sm:block", mobileFilter === 'plans' ? 'block' : 'hidden')}>
                         <Text size="1" weight="bold" color="gray" as="div" className="hidden sm:block uppercase tracking-wider">
                             PLANS

@@ -31,7 +31,7 @@ export function CompletedActionItem({ action, isLast }: CompletedActionItemProps
                 <CheckCircledIcon className="h-5 w-5 text-muted-foreground" />
             </div>
 
-            <div className="flex-1 flex flex-row items-center justify-between gap-4">
+            <div className="flex-1 flex flex-row items-center justify-between gap-4 min-w-0">
                 <div className="flex flex-col gap-1 min-w-0">
                     <Text size="3" weight="medium" highContrast className="truncate">{action.title}</Text>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
