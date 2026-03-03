@@ -67,7 +67,7 @@ export function PlanCard({ plan, actions, onCreateAction, onEditAction, onEditPl
         <CardHeader className="px-4 w-full min-w-0">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mb-1">
                 <Heading as="h3" size="4" weight="medium">{plan.title}</Heading>
               </div>
               {plan.description && (
