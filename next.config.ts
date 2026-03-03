@@ -10,8 +10,6 @@ const withPWA = withPWAInit({
   reloadOnOnline: true,
 });
 
-const nextConfig: NextConfig = {
-  turbopack: {},
-};
+const nextConfig: NextConfig = {};
 
 export default withPWA(nextConfig);

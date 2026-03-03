@@ -1,5 +1,28 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Never cache HTML pages — browser must always fetch fresh entry-point HTML
+# so it gets the correct chunk hashes for the latest deployment.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Service Worker files — must never be cached by Netlify CDN
 [[headers]]
   for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/swe-worker-*.js"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
